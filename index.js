@@ -65,18 +65,18 @@ root.addChild(...blobContainers);
 
 app.ticker.add(() => {
   t1 += 0.01;
-  t2 += 0.01;
+  t2 += 0;
 
   for (const container of blobContainers) {
     // root.rotation += 0.0001;
     container.orbitAngle += container.orbitSpeed;
     container.x =
       centerX +
-      Math.cos(container.orbitAngle + container.orbitSpeed * 4096 + t1) *
+      Math.cos(container.orbitAngle + container.orbitSpeed * 20000 + t1) *
         container.orbitRadius;
     container.y =
       centerY +
-      Math.sin(container.orbitAngle + container.orbitSpeed * 8192 - t2) *
+      Math.sin(container.orbitAngle + container.orbitSpeed * 10000 - t2) *
         container.orbitRadius;
     container.rotation += container.rotationSpeed;
   }
