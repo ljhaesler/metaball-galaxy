@@ -65,8 +65,8 @@ root.origin.set(root.width / 2, root.height / 2);
 root.addChild(...blobContainers);
 
 app.ticker.add(() => {
-  t1 += 0.016;
-  t2 += 0.002;
+  t1 += 0.032;
+  t2 += 0;
 
   for (const container of blobContainers) {
     // root.rotation += 0.0001;
