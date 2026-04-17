@@ -11,10 +11,11 @@ export class BlobContainer extends ParticleContainer {
       },
     });
 
+    const distance = Math.random();
     this.height = blobContainerOptions.containerSize;
     this.width = blobContainerOptions.containerSize;
-    this.x = (Math.random() * 0.6 + 0.2) * app.screen.width;
-    this.y = (Math.random() * 0.6 + 0.2) * app.screen.height;
+    this.x = (distance * 0.6 + 0.2) * app.screen.width;
+    this.y = (distance * 0.6 + 0.2) * app.screen.height;
     this.blendMode = "add";
 
     this.pivot.set(this.width / 2, this.height / 2);
