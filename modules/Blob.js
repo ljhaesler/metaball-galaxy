@@ -27,7 +27,7 @@ export class BlobSpawner extends GraphicsTex {
       particle.anchor = 0.5;
 
       const angle = Math.random() * Math.PI * 2;
-      const normalizedRadius = Math.pow(Math.random(), 1); // 2 being the strength of bias towards the center
+      const normalizedRadius = Math.pow(Math.random(), 0.1); // 2 being the strength of bias towards the center
       const radius = normalizedRadius * this.containerSize;
 
       const scaleFactor = 1;

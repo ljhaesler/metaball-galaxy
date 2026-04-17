@@ -18,7 +18,7 @@ const blobColors = ["#ff0000", "#ff00ff", "#00ffff", "#ffff00"];
 const blobContainers = [];
 const blobContainerSize = 64;
 
-for (let i = 0; i < 5000; i++) {
+for (let i = 0; i < 512; i++) {
   const blobContainer = new BlobContainer({
     orbitSpd: 0.000001,
     colors: blobColors,
@@ -30,7 +30,7 @@ for (let i = 0; i < 5000; i++) {
     containerSize: blobContainerSize,
   });
 
-  const blobs = blobSpawner.makeBlobs(32);
+  const blobs = blobSpawner.makeBlobs(64);
 
   for (const blob of blobs) {
     if (Math.random() > 0.5) blob.tint = blobContainer.colors[0];
