@@ -7,7 +7,6 @@ export class BlobSpawner extends GraphicsTex {
 
     this.size = blobOptions.size;
     this.containerSize = blobOptions.containerSize;
-    this.gradient = blobOptions.gradient;
     this.colors = blobOptions.colors;
     this.blobs = [];
 
@@ -15,7 +14,10 @@ export class BlobSpawner extends GraphicsTex {
   }
 
   init() {
-    this.rect(0, 0, this.size, this.size).fill(this.gradient);
+    this.rect(0, 0, this.size, this.size).fill({
+      color: "#ffffff",
+      alpha: 1,
+    });
   }
 
   makeBlobs(quantity) {
@@ -28,7 +30,7 @@ export class BlobSpawner extends GraphicsTex {
       const normalizedRadius = Math.pow(Math.random(), 16); // 2 being the strength of bias towards the center
       const radius = normalizedRadius * this.containerSize;
 
-      const scaleFactor = (Math.random() + 1) * this.size;
+      const scaleFactor = 1;
       particle.x = radius * Math.cos(angle);
       particle.y = radius * Math.sin(angle);
       particle.scaleX = scaleFactor;

@@ -12,24 +12,13 @@ await app.init({
 document.body.appendChild(app.canvas);
 export default app;
 
-const blobMinSize = 1;
+const blobMaxSize = 2;
 // radius can be up to twice this size
-const blobColors = [0xfff000, 0x000fff, 0x0ffff0];
+const blobColors = ["#ff0000", "#00ff00", "#0000ff", "#888888"];
 const blobContainers = [];
-const blobContainerSize = 32;
-const blobGradient = new FillGradient({
-  type: "radial",
-  center: { x: 0.5, y: 0.5 },
-  innerRadius: 0,
-  outerCenter: { x: 0.5, y: 0.5 },
-  outerRadius: 0.5,
-  colorStops: [
-    { offset: 0, color: "#ffffffff" }, // Center color
-    { offset: 1, color: "#00000000" }, // Edge color
-  ],
-});
+const blobContainerSize = 128;
 
-for (let i = 0; i < 2048; i++) {
+for (let i = 0; i < 8192; i++) {
   const blobContainer = new BlobContainer({
     orbitSpd: 0.000001,
     colors: blobColors,
@@ -37,13 +26,11 @@ for (let i = 0; i < 2048; i++) {
   });
 
   const blobSpawner = new BlobSpawner({
-    size: blobMinSize,
-
-    gradient: blobGradient,
+    size: blobMaxSize,
     containerSize: blobContainerSize,
   });
 
-  const blobs = blobSpawner.makeBlobs(128);
+  const blobs = blobSpawner.makeBlobs(32);
 
   for (const blob of blobs) {
     if (Math.random() > 0.5) blob.tint = blobContainer.colors[0];
@@ -72,14 +59,26 @@ app.ticker.add(() => {
     container.orbitAngle += container.orbitSpeed;
     container.x =
       centerX +
-      Math.cos(container.orbitAngle + container.orbitSpeed * 20000 + t1) *
+      Math.cos(container.orbitAngle + container.orbitSpeed * 1 + t1) *
         container.orbitRadius;
     container.y =
       centerY +
-      Math.sin(container.orbitAngle + container.orbitSpeed * 10000 - t2) *
+      Math.sin(container.orbitAngle + container.orbitSpeed * 10000000 - t2) *
         container.orbitRadius;
     container.rotation += container.rotationSpeed;
   }
 });
 
 app.stage.addChild(root);
+
+// const blobGradient = new FillGradient({
+//   type: "radial",
+//   center: { x: 0.5, y: 0.5 },
+//   innerRadius: 0,
+//   outerCenter: { x: 0.5, y: 0.5 },
+//   outerRadius: 0.5,
+//   colorStops: [
+//     { offset: 0, color: "#ffffffff" }, // Center color
+//     { offset: 1, color: "#00000000" }, // Edge color
+//   ],
+// });

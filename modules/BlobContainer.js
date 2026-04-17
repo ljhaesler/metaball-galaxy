@@ -35,15 +35,20 @@ export class BlobContainer extends ParticleContainer {
 
     this.colors = [];
 
-    if (distCenterRatio > 0.7)
+    if (distCenterRatio > 0.75)
       this.colors.push(
         blobContainerOptions.colors[0],
         blobContainerOptions.colors[1],
       );
-    else if (distCenterRatio > 0.35)
+    else if (distCenterRatio > 0.5)
       this.colors.push(
         blobContainerOptions.colors[1],
         blobContainerOptions.colors[2],
+      );
+    else if (distCenterRatio > 0.25)
+      this.colors.push(
+        blobContainerOptions.colors[2],
+        blobContainerOptions.colors[3],
       );
     else
       this.colors.push(
