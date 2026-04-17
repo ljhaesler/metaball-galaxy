@@ -11,14 +11,47 @@ export class BlobContainer extends ParticleContainer {
       },
     });
 
-    const distance = Math.random();
     this.height = blobContainerOptions.containerSize;
     this.width = blobContainerOptions.containerSize;
-    this.x = (distance * 0.6 + 0.2) * app.screen.width;
-    this.y = (distance * 0.6 + 0.2) * app.screen.height;
-    this.blendMode = "add";
 
     this.pivot.set(this.width / 2, this.height / 2);
+
+    const distanceX = Math.random();
+    const distanceY = Math.random();
+    this.x = (distanceX * 0.6 + 0.2) * app.screen.width;
+    this.y = (distanceY * 0.6 + 0.2) * app.screen.height;
+
+    const diffX = this.x - app.screen.width / 2;
+    const diffY = this.y - app.screen.height / 2;
+    const distCenter = Math.sqrt(diffX * diffX + diffY * diffY);
+
+    const spawnRectSize =
+      Math.sqrt(
+        app.screen.width * app.screen.width +
+          app.screen.height * app.screen.height,
+      ) * 0.32;
+
+    const distCenterRatio = distCenter / spawnRectSize;
+
+    this.colors = [];
+
+    if (distCenterRatio > 0.7)
+      this.colors.push(
+        blobContainerOptions.colors[0],
+        blobContainerOptions.colors[1],
+      );
+    else if (distCenterRatio > 0.35)
+      this.colors.push(
+        blobContainerOptions.colors[1],
+        blobContainerOptions.colors[2],
+      );
+    else
+      this.colors.push(
+        blobContainerOptions.colors[0],
+        blobContainerOptions.colors[2],
+      );
+
+    this.blendMode = "add";
 
     this.centerX = app.screen.width / 2;
     this.centerY = app.screen.height / 2;
