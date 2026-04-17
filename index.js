@@ -18,7 +18,7 @@ const blobColors = ["#ff0000", "#00ff00", "#0000ff", "#888888"];
 const blobContainers = [];
 const blobContainerSize = 128;
 
-for (let i = 0; i < 8192; i++) {
+for (let i = 0; i < 5000; i++) {
   const blobContainer = new BlobContainer({
     orbitSpd: 0.000001,
     colors: blobColors,
@@ -51,7 +51,7 @@ root.origin.set(root.width / 2, root.height / 2);
 root.addChild(...blobContainers);
 
 app.ticker.add(() => {
-  t1 += 0.01;
+  t1 += 0.1;
   t2 += 0;
 
   for (const container of blobContainers) {
@@ -63,9 +63,9 @@ app.ticker.add(() => {
         container.orbitRadius;
     container.y =
       centerY +
-      Math.sin(container.orbitAngle + container.orbitSpeed * 10000000 - t2) *
+      Math.sin(container.orbitAngle + container.orbitSpeed * 50000 - t2) *
         container.orbitRadius;
-    container.rotation += container.rotationSpeed;
+    // container.rotation += container.rotationSpeed;
   }
 });
 
