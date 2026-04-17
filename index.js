@@ -12,9 +12,9 @@ await app.init({
 document.body.appendChild(app.canvas);
 export default app;
 
-const blobMinSize = 2;
+const blobMinSize = 1;
 // radius can be up to twice this size
-const blobColors = [0xff0000, 0x000ff, 0x00ff00];
+const blobColors = [0x0043ff, 0x008220, 0x202082];
 const blobContainers = [];
 const blobContainerSize = 128;
 const blobGradient = new FillGradient({
@@ -29,7 +29,7 @@ const blobGradient = new FillGradient({
   ],
 });
 
-for (let i = 0; i < 512; i++) {
+for (let i = 0; i < 1024; i++) {
   const blobContainer = new BlobContainer({
     orbitSpd: 0.000002,
     containerSize: blobContainerSize,
@@ -42,7 +42,14 @@ for (let i = 0; i < 512; i++) {
     containerSize: blobContainerSize,
   });
 
-  const blobs = blobSpawner.makeBlobs(Math.floor(512 * Math.random()));
+  const blobs = blobSpawner.makeBlobs(128);
+
+  const blobColor1 = blobColors[Math.floor(Math.random() * blobColors.length)];
+  const blobColor2 = blobColors[Math.floor(Math.random() * blobColors.length)];
+  for (const blob of blobs) {
+    if (Math.random() > 0.5) blob.tint = blobColor1;
+    else blob.tint = blobColor2;
+  }
 
   blobContainer.addParticle(...blobs);
   blobContainers.push(blobContainer);
@@ -58,7 +65,7 @@ root.origin.set(root.width / 2, root.height / 2);
 root.addChild(...blobContainers);
 
 app.ticker.add(() => {
-  t1 += 0.016;
+  t1 += 0.002;
   t2 += 0.004;
 
   for (const container of blobContainers) {
@@ -70,9 +77,9 @@ app.ticker.add(() => {
         container.orbitRadius;
     container.y =
       centerY +
-      Math.sin(container.orbitAngle + container.orbitSpeed * 12000 - t2) *
+      Math.sin(container.orbitAngle + container.orbitSpeed * 4096 - t2) *
         container.orbitRadius;
-    container.rotation += 0.01;
+    container.rotation += container.rotationSpeed;
   }
 });
 

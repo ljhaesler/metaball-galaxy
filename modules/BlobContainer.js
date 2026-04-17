@@ -26,6 +26,8 @@ export class BlobContainer extends ParticleContainer {
       this.centerX * this.centerX + this.centerY * this.centerY,
     );
 
+    this.rotationSpeed = (Math.random() - 0.5) / 64;
+
     this.orbitRadius = Math.sqrt(
       (this.x - this.centerX) * (this.x - this.centerX) +
         (this.y - this.centerY) * (this.y - this.centerY),
@@ -40,7 +42,5 @@ export class BlobContainer extends ParticleContainer {
     // this.y =
     //   this.centerY +
     //   Math.sin(this.orbitAngle + this.orbitSpeed * 12000) * this.orbitRadius;
-
-    this.attractionStrength = Math.random() / 256;
   }
 }
