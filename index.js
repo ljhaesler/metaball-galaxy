@@ -1,44 +1,65 @@
+// I need as many ParticleSpawners are there are colour sets
+// these ParticleSpawners are used to populate UserEmailSystems with particles
+// and the Galaxy itself is populated with UserEmailSystems
+// GalaxyDensity should be defined on the Galaxy itself
+// but the UserEmailSystems need the GalaxyDensity
+
 import { Application, Point, Filter, Container, FillGradient } from "pixi.js";
 import "pixi.js/advanced-blend-modes";
-import { BlobContainer } from "./modules/BlobContainer.js";
-import { BlobSpawner } from "./modules/Blob.js";
+import { UserEmailSystem } from "./modules/UserEmailSystem.js";
+import { ParticleSpawner } from "./modules/ParticleSpawner.js";
+import { Galaxy } from "./modules/Galaxy.js";
 
 const app = new Application();
 await app.init({
-  background: "#000000ff",
+  background: "#000000",
+  backgroundAlpha: 1,
   resizeTo: window,
-  antialias: false,
+  antialias: true,
 });
 document.body.appendChild(app.canvas);
 export default app;
 
-const blobMaxSize = 2;
-// radius can be up to twice this size
-const blobColors = ["#ff0000", "#ff00ff", "#00ffff", "#ffff00"];
-const blobContainers = [];
-const blobContainerSize = 64;
+const galaxy = new Galaxy({ galaxyDensity: 0.7, containerSize: 32 });
 
-for (let i = 0; i < 512; i++) {
-  const blobContainer = new BlobContainer({
-    orbitSpd: 0.000001,
-    colors: blobColors,
-    containerSize: blobContainerSize,
+galaxy.origin.set(galaxy.width / 2, galaxy.height / 2);
+galaxy.createParticleSpawner({
+  colors: ["#ff0000", "#ff00ff"],
+  particleSize: 1,
+  alpha: 1,
+});
+
+galaxy.createParticleSpawner({
+  colors: ["#ff00ff", "#00ffff"],
+  particleSize: 1,
+  alpha: 0.7,
+});
+
+galaxy.createParticleSpawner({
+  colors: ["#ffff00", "#ff000f"],
+  particleSize: 1,
+  alpha: 1,
+});
+
+galaxy.createParticleSpawner({
+  colors: ["#ffffff", "#333333"],
+  particleSize: 1,
+  alpha: 1,
+});
+
+// a particleContainer is a very heavy entity to hold in memory, 4000+ is very slow
+// there ought to be a way of making it more lean?
+// perhaps simply having something that extends Particle instead
+// this should be possible because these containers are simply rotating sets of particles
+// based on the current implementation, each container could simply just be single 'Particle' instance.
+// converting the container via .cacheAsTexture() would likely be the simplest implementation
+// but I don't know how transparency/additive colouring would be handled.
+
+for (let i = 0; i < 4096; i++) {
+  galaxy.createUserSystem({
+    rotationSpeed: 0.01,
+    emailQuantity: 32,
   });
-
-  const blobSpawner = new BlobSpawner({
-    size: blobMaxSize,
-    containerSize: blobContainerSize,
-  });
-
-  const blobs = blobSpawner.makeBlobs(64);
-
-  for (const blob of blobs) {
-    if (Math.random() > 0.5) blob.tint = blobContainer.colors[0];
-    else blob.tint = blobContainer.colors[1];
-  }
-
-  blobContainer.addParticle(...blobs);
-  blobContainers.push(blobContainer);
 }
 
 let t1 = 0;
@@ -46,30 +67,27 @@ let t2 = 0;
 const centerX = app.screen.width / 2;
 const centerY = app.screen.height / 2;
 
-const root = new Container();
-root.origin.set(root.width / 2, root.height / 2);
-root.addChild(...blobContainers);
+console.log(galaxy.children);
 
 app.ticker.add(() => {
   t1 += 0;
   t2 += 0;
 
-  for (const container of blobContainers) {
-    // root.rotation += 0.0001;
+  for (const container of galaxy.children) {
     container.orbitAngle += container.orbitSpeed;
     container.x =
       centerX +
-      Math.cos(container.orbitAngle + container.orbitSpeed * 4096 + t1) *
+      Math.sin(container.orbitAngle + container.orbitSpeed * 400000 + t1) *
         container.orbitRadius;
     container.y =
       centerY +
-      Math.sin(container.orbitAngle + container.orbitSpeed * 8192 - t2) *
+      Math.cos(container.orbitAngle + container.orbitSpeed * 200000 + t2) *
         container.orbitRadius;
-    // container.rotation += container.rotationSpeed;
+    container.rotation += container.rotationSpeed;
   }
 });
 
-app.stage.addChild(root);
+app.stage.addChild(galaxy);
 
 // const blobGradient = new FillGradient({
 //   type: "radial",
