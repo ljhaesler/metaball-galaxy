@@ -20,7 +20,7 @@ await app.init({
 document.body.appendChild(app.canvas);
 export default app;
 
-const galaxy = new Galaxy({ galaxyDensity: 0.7, containerSize: 32 });
+const galaxy = new Galaxy({ galaxyDensity: 0.3, containerSize: 32 });
 
 galaxy.origin.set(galaxy.width / 2, galaxy.height / 2);
 galaxy.createParticleSpawner({
@@ -58,7 +58,7 @@ galaxy.createParticleSpawner({
 for (let i = 0; i < 4096; i++) {
   galaxy.createUserSystem({
     rotationSpeed: 0.01,
-    emailQuantity: 32,
+    emailQuantity: 64,
   });
 }
 
@@ -70,8 +70,8 @@ const centerY = app.screen.height / 2;
 console.log(galaxy.children);
 
 app.ticker.add(() => {
-  t1 += 0;
-  t2 += 0;
+  t1 += 0.01;
+  t2 += 0.01;
 
   for (const container of galaxy.children) {
     container.orbitAngle += container.orbitSpeed;
@@ -81,7 +81,7 @@ app.ticker.add(() => {
         container.orbitRadius;
     container.y =
       centerY +
-      Math.tan(container.orbitAngle + container.orbitSpeed * 8000 + t2) *
+      Math.cos(container.orbitAngle + container.orbitSpeed * 40000 - t2) *
         container.orbitRadius;
     container.rotation += container.rotationSpeed;
   }
