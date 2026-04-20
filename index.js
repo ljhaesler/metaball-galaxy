@@ -77,11 +77,11 @@ app.ticker.add(() => {
     container.orbitAngle += container.orbitSpeed;
     container.x =
       centerX +
-      Math.sin(container.orbitAngle + container.orbitSpeed * 400000 + t1) *
+      Math.sin(container.orbitAngle + container.orbitSpeed * 80000 + t1) *
         container.orbitRadius;
     container.y =
       centerY +
-      Math.cos(container.orbitAngle + container.orbitSpeed * 200000 + t2) *
+      Math.tan(container.orbitAngle + container.orbitSpeed * 8000 + t2) *
         container.orbitRadius;
     container.rotation += container.rotationSpeed;
   }
