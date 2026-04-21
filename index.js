@@ -4,6 +4,17 @@
 // GalaxyDensity should be defined on the Galaxy itself
 // but the UserEmailSystems need the GalaxyDensity
 
+const galaxyDensity = 0.6;
+const containerSize = 64;
+const rotationSpeed = 0.01;
+const emailQuantity = 128;
+const userQuantity = 3200;
+const centerBias = 4;
+const spin1 = 0.01;
+const spin2 = 0;
+const phaseOffset1 = 8192;
+const phaseOffset2 = 2048;
+
 import { Application, Point, Filter, Container, FillGradient } from "pixi.js";
 import "pixi.js/advanced-blend-modes";
 import { UserEmailSystem } from "./modules/UserEmailSystem.js";
@@ -20,30 +31,34 @@ await app.init({
 document.body.appendChild(app.canvas);
 export default app;
 
-const galaxy = new Galaxy({ galaxyDensity: 0.6, containerSize: 64 });
+const galaxy = new Galaxy({ galaxyDensity, containerSize });
 
 galaxy.createParticleSpawner({
   colors: ["#ff0000", "#ff00ff"],
   particleSize: 1,
   alpha: 1,
+  centerBias,
 });
 
 galaxy.createParticleSpawner({
   colors: ["#ff00ff", "#00ffff"],
   particleSize: 1,
-  alpha: 0.7,
+  alpha: 1,
+  centerBias,
 });
 
 galaxy.createParticleSpawner({
   colors: ["#ffff00", "#ff000f"],
   particleSize: 1,
   alpha: 1,
+  centerBias,
 });
 
 galaxy.createParticleSpawner({
   colors: ["#ffffff", "#3333ff"],
   particleSize: 1,
   alpha: 1,
+  centerBias,
 });
 
 // a particleContainer is a very heavy entity to hold in memory, 4000+ is very slow
@@ -58,10 +73,10 @@ galaxy.createParticleSpawner({
 // anything more just feels sluggish
 // cacheAsTexture just doesn't seem to work
 // but maybe I can use rendergrouping instead
-for (let i = 0; i < 3200; i++) {
+for (let i = 0; i < userQuantity; i++) {
   galaxy.createUserSystem({
-    rotationSpeed: 0.01,
-    emailQuantity: 128,
+    rotationSpeed,
+    emailQuantity,
   });
 }
 
@@ -71,8 +86,8 @@ const centerX = app.screen.width / 2;
 const centerY = app.screen.height / 2;
 
 app.ticker.add(() => {
-  t1 += 0;
-  t2 += 0;
+  t1 += spin1;
+  t2 += spin2;
 
   for (const container of galaxy.children) {
     container.orbitAngle += container.orbitSpeed;
@@ -81,11 +96,15 @@ app.ticker.add(() => {
     // but it is then ignored for the actual positioning of the container inside this ticker.
     container.x =
       centerX +
-      Math.cos(container.orbitAngle + container.orbitSpeed * 8192 + t1) *
+      Math.cos(
+        container.orbitAngle + container.orbitSpeed * phaseOffset1 + t1,
+      ) *
         container.orbitRadius;
     container.y =
       centerY +
-      Math.sin(container.orbitAngle + container.orbitSpeed * 2048 - t2) *
+      Math.sin(
+        container.orbitAngle + container.orbitSpeed * phaseOffset2 - t2,
+      ) *
         container.orbitRadius;
     container.rotation += container.rotationSpeed;
   }
