@@ -2,10 +2,10 @@ import { Graphics, Sprite, Particle } from "pixi.js";
 import app from "../index.js";
 
 export class GraphicsTex extends Graphics {
-  constructor() {
+  constructor(texture) {
     super();
 
-    this.texture = null;
+    this.texture = texture || null;
     this.sprites = [];
     this.particles = [];
   }

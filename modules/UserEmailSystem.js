@@ -5,8 +5,11 @@ export class UserEmailSystem extends ParticleContainer {
   constructor(emailSystemOptions) {
     super({
       dynamicProperties: {
-        position: true, // Update positions each frame
-        vertex: true, // Update rotations each frame
+        position: false, // Update positions each frame
+        vertex: false, // Update rotations each frame
+        rotation: false,
+        uvs: false,
+        color: false,
       },
     });
 
@@ -17,6 +20,7 @@ export class UserEmailSystem extends ParticleContainer {
     this.width = emailSystemOptions.containerSize;
 
     this.pivot.set(this.width / 2, this.height / 2);
+    this.origin.set(this.width / 2, this.height / 2);
     this.screenDiagonal = Math.sqrt(
       app.screen.width * app.screen.width +
         app.screen.height * app.screen.height,
@@ -24,8 +28,17 @@ export class UserEmailSystem extends ParticleContainer {
 
     this.spawnPoint = this._getSpawnPoint();
 
+    // line spawn along x
+    // this.x = app.screen.width / 2;
+    // this.y = this.spawnPoint.y;
+    // line spawn along y, tends to produce similar effects, but they make the galaxy bigger?
+    // this.x = this.spawnPoint.x;
+    // this.y = app.screen.height / 2;
+    // standard rectangle spawn
     this.x = this.spawnPoint.x;
-    this.y = this.spawnPoint.x;
+    this.y = this.spawnPoint.y;
+    // triangle spawn with ._getTriangleSpawnPoint(), but the triangle isn't centered
+
     this.blendMode = "add";
     this.centerX = app.screen.width / 2;
     this.centerY = app.screen.height / 2;
@@ -60,6 +73,42 @@ export class UserEmailSystem extends ParticleContainer {
     // spawnRectDiagonal / 2 -> simply because the distance of the container from the center
     // presumes half the spawnRectDiagonal size.
     this.distCenter = distCenter / (spawnRectDiagonal / 2);
+  }
+
+  _getTriangleSpawnPoint() {
+    // Your existing galaxy density logic
+    const minValue = 0.5 - this.galaxyDensity / 2;
+    const rRatio = this.galaxyDensity;
+
+    // Generate base random values within your density constraints
+    const baseX = Math.random() * rRatio + minValue;
+    const baseY = Math.random() * rRatio + minValue;
+
+    // Define your triangle vertices (adjust these to your game's layout)
+    const A = { x: 0, y: app.screen.height }; // Bottom-left
+    const B = {
+      x: app.screen.width,
+      y: app.screen.height,
+    }; // Bottom-right
+    const C = { x: app.screen.width / 2, y: 0 }; // Top-center
+
+    // Use the reflection method to map your random values into the triangle
+    const r1 = baseX;
+    const r2 = baseY;
+
+    let x, y;
+
+    if (r1 + r2 > 1) {
+      // Reflect to stay within triangle
+      x = A.x + (1 - r1) * (B.x - A.x) + (1 - r2) * (C.x - A.x);
+      y = A.y + (1 - r1) * (B.y - A.y) + (1 - r2) * (C.y - A.y);
+    } else {
+      // Direct mapping
+      x = A.x + r1 * (B.x - A.x) + r2 * (C.x - A.x);
+      y = A.y + r1 * (B.y - A.y) + r2 * (C.y - A.y);
+    }
+
+    return { x, y };
   }
 
   _getSpawnPoint() {

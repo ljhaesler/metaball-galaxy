@@ -20,9 +20,8 @@ await app.init({
 document.body.appendChild(app.canvas);
 export default app;
 
-const galaxy = new Galaxy({ galaxyDensity: 0.3, containerSize: 32 });
+const galaxy = new Galaxy({ galaxyDensity: 0.6, containerSize: 64 });
 
-galaxy.origin.set(galaxy.width / 2, galaxy.height / 2);
 galaxy.createParticleSpawner({
   colors: ["#ff0000", "#ff00ff"],
   particleSize: 1,
@@ -42,7 +41,7 @@ galaxy.createParticleSpawner({
 });
 
 galaxy.createParticleSpawner({
-  colors: ["#ffffff", "#333333"],
+  colors: ["#ffffff", "#3333ff"],
   particleSize: 1,
   alpha: 1,
 });
@@ -52,13 +51,17 @@ galaxy.createParticleSpawner({
 // perhaps simply having something that extends Particle instead
 // this should be possible because these containers are simply rotating sets of particles
 // based on the current implementation, each container could simply just be single 'Particle' instance.
-// converting the container via .cacheAsTexture() would likely be the simplest implementation
-// but I don't know how transparency/additive colouring would be handled.
 
-for (let i = 0; i < 4096; i++) {
+// converting the container via .cacheAsTexture() would likely be the simplest implementation
+
+// 4000 seems to be a soft limit for decent fps
+// anything more just feels sluggish
+// cacheAsTexture just doesn't seem to work
+// but maybe I can use rendergrouping instead
+for (let i = 0; i < 3200; i++) {
   galaxy.createUserSystem({
     rotationSpeed: 0.01,
-    emailQuantity: 64,
+    emailQuantity: 128,
   });
 }
 
@@ -67,27 +70,29 @@ let t2 = 0;
 const centerX = app.screen.width / 2;
 const centerY = app.screen.height / 2;
 
-console.log(galaxy.children);
-
 app.ticker.add(() => {
-  t1 += 0.01;
-  t2 += 0.01;
+  t1 += 0;
+  t2 += 0;
 
   for (const container of galaxy.children) {
     container.orbitAngle += container.orbitSpeed;
+    // notably, the original position of the container is not taken into account here
+    // the position of the container is used to calculate its orbitAngle, orbitSpeed, orbitRadius
+    // but it is then ignored for the actual positioning of the container inside this ticker.
     container.x =
       centerX +
-      Math.sin(container.orbitAngle + container.orbitSpeed * 8000000 + t1) *
+      Math.cos(container.orbitAngle + container.orbitSpeed * 8192 + t1) *
         container.orbitRadius;
     container.y =
       centerY +
-      Math.tan(container.orbitAngle + container.orbitSpeed * 4000000 - t2) *
+      Math.sin(container.orbitAngle + container.orbitSpeed * 2048 - t2) *
         container.orbitRadius;
     container.rotation += container.rotationSpeed;
   }
 });
 
 app.stage.addChild(galaxy);
+// galaxy.usersToTextures();
 
 // const blobGradient = new FillGradient({
 //   type: "radial",

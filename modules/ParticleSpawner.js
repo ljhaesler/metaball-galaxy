@@ -23,7 +23,7 @@ export class ParticleSpawner extends GraphicsTex {
 
   _getPosition() {
     const angle = Math.random() * Math.PI * 2;
-    const normalizedRadius = Math.pow(Math.random(), 8); // 2 being the strength of bias towards the center
+    const normalizedRadius = Math.pow(Math.random(), 8); // 8 being the strength of bias towards the center
     const radius = normalizedRadius * this.containerSize;
 
     return { x: radius * Math.cos(angle), y: radius * Math.sin(angle) };
