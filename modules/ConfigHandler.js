@@ -76,59 +76,14 @@ export class ConfigHandler {
 
   _createOptions() {
     for (const option in this.config) {
-      const wrapper = document.createElement("div");
-      wrapper.style.margin = "4px";
-
-      // create label
-      const lbl = document.createElement("label");
-      lbl.textContent = this.config[option].label;
-      lbl.style.fontSize = "20px";
-      lbl.style.color = "white";
-      lbl.style.margin = "0px 8px 0px 8px";
-
-      // create input
-      let input;
-      if (this.config[option].type === "select") {
-        input = document.createElement("select");
-        input.style.width = "30%";
-        input.style.padding = "8px";
-        input.style.backgroundColor = "#aaaaaa";
-
-        this.config[option].values.forEach((val) => {
-          const opt = document.createElement("option");
-          opt.value = val.toLowerCase();
-          opt.textContent = val;
-          input.appendChild(opt);
-        });
-      } else {
-        input = document.createElement("input");
-        input.value = this.config[option].defaultValue;
-        input.type = this.config[option].type;
-        input.style.width = "30%";
-        input.style.backgroundColor = "#aaaaaa";
-        input.style.padding = "8px";
-        if (this.config[option].type === "checkbox") {
-          input.checked = false;
-        }
-      }
-
-      this.inputElements[option] = input;
-
-      // create description (if present)
-      let desc = null;
-      if (this.config[option].description) {
-        desc = document.createElement("p");
-        desc.textContent = this.config[option].description;
-        desc.style.width = "50%";
-        desc.style.color = "#dddddd";
-        desc.style.margin = "8px 0px 0px 16px";
-      }
-
-      // put wrapper together
-      wrapper.appendChild(lbl);
-      wrapper.appendChild(input);
-      if (desc) wrapper.appendChild(desc);
-      this.overlay.appendChild(wrapper);
+      this.createOption(
+        option,
+        this.config[option].label,
+        this.config[option].type,
+        this.config[option].defaultValue,
+        this.config[option].values,
+        this.config[option].description,
+      );
     }
   }
 
@@ -138,13 +93,14 @@ export class ConfigHandler {
    * @param {string} type - Input type ('text', 'checkbox', 'select', etc.)
    * @param {Array} values - Array of options (for select) or empty for others
    */
-  createOption(label, type, defaultValue, values, description) {
+  createOption(name, label, type, defaultValue, values, description) {
     const wrapper = document.createElement("div");
     wrapper.style.margin = "4px";
 
     // create label
     const lbl = document.createElement("label");
     lbl.textContent = label;
+    lbl.style.fontSize = "20px";
     lbl.style.color = "white";
     lbl.style.margin = "0px 8px 0px 8px";
 
@@ -152,8 +108,9 @@ export class ConfigHandler {
     let input;
     if (type === "select") {
       input = document.createElement("select");
-      input.style.width = "10%";
+      input.style.width = "30%";
       input.style.padding = "8px";
+      input.style.backgroundColor = "#aaaaaa";
 
       values.forEach((val) => {
         const opt = document.createElement("option");
@@ -165,20 +122,22 @@ export class ConfigHandler {
       input = document.createElement("input");
       input.value = defaultValue;
       input.type = type;
-      input.style.width = "10%";
+      input.style.width = "30%";
+      input.style.backgroundColor = "#aaaaaa";
       input.style.padding = "8px";
       if (type === "checkbox") {
         input.checked = false;
       }
     }
-    this.config[label] = input;
+    this.inputElements[name] = input;
 
     // create description (if present)
     let desc = null;
     if (description) {
       desc = document.createElement("p");
       desc.textContent = description;
-      desc.style.color = "white";
+      desc.style.width = "50%";
+      desc.style.color = "#dddddd";
       desc.style.margin = "8px 0px 0px 16px";
     }
 

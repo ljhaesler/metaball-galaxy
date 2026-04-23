@@ -90,7 +90,6 @@ const centerX = app.screen.width / 2;
 const centerY = app.screen.height / 2;
 
 app.ticker.add(() => {
-  console.log("running");
   const inputs = configHandler.inputElements;
   t1 += parseFloat(inputs.spin1.value) || 0;
   t2 += parseFloat(inputs.spin2.value) || 0;
