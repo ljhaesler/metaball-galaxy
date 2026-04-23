@@ -78,6 +78,13 @@
     "values": [],
     "description": "Définit les palettes de couleurs utilisées pour les particules. Chaque sous-tableau représente une palette de couleurs."
   },
+  "particleAlpha": {
+    "label": "Alpha/Opacité des Particules",
+    "type": "text",
+    "defaultValue": "0.8",
+    "values": [],
+    "description": "Définit la transparence des particules."
+  },
   "particleSize": {
     "label": "Taille des Emails",
     "type": "text",

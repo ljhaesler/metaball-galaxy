@@ -41,6 +41,9 @@ function generateGalaxy() {
   const centerBias = parseInt(configHandler.inputElements.centerBias.value);
   const particleSize = parseInt(configHandler.inputElements.particleSize.value);
   const userSpawnFunc = configHandler.inputElements.userSpawnFunc.value;
+  const particleAlpha = parseFloat(
+    configHandler.inputElements.particleAlpha.value,
+  );
 
   const particleSets = configHandler.inputElements.particleColors.value
     .split("/")
@@ -54,7 +57,7 @@ function generateGalaxy() {
     galaxy.createParticleSpawner({
       colors: colorSet,
       particleSize,
-      alpha: 1,
+      alpha: particleAlpha,
       centerBias,
     });
   }
@@ -79,6 +82,7 @@ configHandler.inputElements.centerBias.onchange = generateGalaxy;
 configHandler.inputElements.particleColors.onchange = generateGalaxy;
 configHandler.inputElements.particleSize.onchange = generateGalaxy;
 configHandler.inputElements.userSpawnFunc.onchange = generateGalaxy;
+configHandler.inputElements.particleAlpha.onchange = generateGalaxy;
 
 let t1 = 0;
 let t2 = 0;
