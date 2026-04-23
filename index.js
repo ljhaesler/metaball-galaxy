@@ -4,81 +4,81 @@
 // GalaxyDensity should be defined on the Galaxy itself
 // but the UserEmailSystems need the GalaxyDensity
 
-const galaxyDensity = 0.6;
-const containerSize = 64;
-const rotationSpeed = 0.01;
-const emailQuantity = 128;
-const userQuantity = 3200;
-const centerBias = 4;
-const spin1 = 0.01;
-const spin2 = 0;
-const phaseOffset1 = 8192;
-const phaseOffset2 = 2048;
-
-import { Application, Point, Filter, Container, FillGradient } from "pixi.js";
-import "pixi.js/advanced-blend-modes";
-import { UserEmailSystem } from "./modules/UserEmailSystem.js";
-import { ParticleSpawner } from "./modules/ParticleSpawner.js";
+import { Application } from "pixi.js";
 import { Galaxy } from "./modules/Galaxy.js";
+import { ConfigHandler } from "./modules/ConfigHandler.js";
+import config from "./config.json" assert { type: "json" };
 
 const app = new Application();
 await app.init({
   background: "#000000",
   backgroundAlpha: 1,
   resizeTo: window,
-  antialias: true,
+  antialias: false,
+  roundPixels: false,
 });
 document.body.appendChild(app.canvas);
 export default app;
 
-const galaxy = new Galaxy({ galaxyDensity, containerSize });
+const configHandler = new ConfigHandler();
 
-galaxy.createParticleSpawner({
-  colors: ["#ff0000", "#ff00ff"],
-  particleSize: 1,
-  alpha: 1,
-  centerBias,
-});
+let galaxy;
+function generateGalaxy() {
+  if (app.stage.children.length > 0) app.stage.removeChildren();
+  const galaxyDensity = parseFloat(
+    configHandler.inputElements.galaxyDensity.value,
+  );
+  const containerSize = parseInt(
+    configHandler.inputElements.containerSize.value,
+  );
+  const rotationSpeed = parseFloat(
+    configHandler.inputElements.rotationSpeed.value,
+  );
+  const emailQuantity = parseInt(
+    configHandler.inputElements.emailQuantity.value,
+  );
+  const userQuantity = parseInt(configHandler.inputElements.userQuantity.value);
+  const centerBias = parseInt(configHandler.inputElements.centerBias.value);
+  const particleSize = parseInt(configHandler.inputElements.particleSize.value);
+  const userSpawnFunc = configHandler.inputElements.userSpawnFunc.value;
 
-galaxy.createParticleSpawner({
-  colors: ["#ff00ff", "#00ffff"],
-  particleSize: 1,
-  alpha: 1,
-  centerBias,
-});
+  const particleSets = configHandler.inputElements.particleColors.value
+    .split("/")
+    .map((el) => el.trim());
+  const particleColors = particleSets.map((el1) =>
+    el1.split(",").map((el2) => el2.trim()),
+  );
 
-galaxy.createParticleSpawner({
-  colors: ["#ffff00", "#ff000f"],
-  particleSize: 1,
-  alpha: 1,
-  centerBias,
-});
+  galaxy = new Galaxy({ galaxyDensity, containerSize });
+  for (const colorSet of particleColors) {
+    galaxy.createParticleSpawner({
+      colors: colorSet,
+      particleSize,
+      alpha: 1,
+      centerBias,
+    });
+  }
 
-galaxy.createParticleSpawner({
-  colors: ["#ffffff", "#3333ff"],
-  particleSize: 1,
-  alpha: 1,
-  centerBias,
-});
-
-// a particleContainer is a very heavy entity to hold in memory, 4000+ is very slow
-// there ought to be a way of making it more lean?
-// perhaps simply having something that extends Particle instead
-// this should be possible because these containers are simply rotating sets of particles
-// based on the current implementation, each container could simply just be single 'Particle' instance.
-
-// converting the container via .cacheAsTexture() would likely be the simplest implementation
-
-// 4000 seems to be a soft limit for decent fps
-// anything more just feels sluggish
-// cacheAsTexture just doesn't seem to work
-// but maybe I can use rendergrouping instead
-for (let i = 0; i < userQuantity; i++) {
-  galaxy.createUserSystem({
-    rotationSpeed,
-    emailQuantity,
-  });
+  for (let i = 0; i < userQuantity; i++) {
+    galaxy.createUserSystem({
+      rotationSpeed,
+      emailQuantity,
+      userSpawnFunc,
+    });
+  }
+  app.stage.addChild(galaxy);
 }
+generateGalaxy();
+
+configHandler.inputElements.galaxyDensity.onchange = generateGalaxy;
+configHandler.inputElements.containerSize.onchange = generateGalaxy;
+configHandler.inputElements.rotationSpeed.onchange = generateGalaxy;
+configHandler.inputElements.emailQuantity.onchange = generateGalaxy;
+configHandler.inputElements.userQuantity.onchange = generateGalaxy;
+configHandler.inputElements.centerBias.onchange = generateGalaxy;
+configHandler.inputElements.particleColors.onchange = generateGalaxy;
+configHandler.inputElements.particleSize.onchange = generateGalaxy;
+configHandler.inputElements.userSpawnFunc.onchange = generateGalaxy;
 
 let t1 = 0;
 let t2 = 0;
@@ -86,9 +86,10 @@ const centerX = app.screen.width / 2;
 const centerY = app.screen.height / 2;
 
 app.ticker.add(() => {
-  t1 += spin1;
-  t2 += spin2;
-
+  console.log("running");
+  const inputs = configHandler.inputElements;
+  t1 += parseFloat(inputs.spin1.value) || 0;
+  t2 += parseFloat(inputs.spin2.value) || 0;
   for (const container of galaxy.children) {
     container.orbitAngle += container.orbitSpeed;
     // notably, the original position of the container is not taken into account here
@@ -96,22 +97,26 @@ app.ticker.add(() => {
     // but it is then ignored for the actual positioning of the container inside this ticker.
     container.x =
       centerX +
-      Math.cos(
-        container.orbitAngle + container.orbitSpeed * phaseOffset1 + t1,
+      Math[inputs.xFunc.value](
+        container.orbitAngle +
+          container.orbitSpeed * inputs.phaseOffset1.value +
+          t1,
       ) *
         container.orbitRadius;
     container.y =
       centerY +
-      Math.sin(
-        container.orbitAngle + container.orbitSpeed * phaseOffset2 - t2,
+      Math[inputs.yFunc.value](
+        container.orbitAngle +
+          container.orbitSpeed * inputs.phaseOffset2.value -
+          t2,
       ) *
         container.orbitRadius;
     container.rotation += container.rotationSpeed;
   }
 });
 
-app.stage.addChild(galaxy);
 // galaxy.usersToTextures();
+// it seems like any attempt to remove the particles themselves will just delete the generated texture altogether
 
 // const blobGradient = new FillGradient({
 //   type: "radial",

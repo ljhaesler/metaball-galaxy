@@ -46,9 +46,6 @@ export class ParticleSpawner extends GraphicsTex {
       particle.x = position.x;
       particle.y = position.y;
 
-      particle.scaleX = this.particleSize * Math.random() + 1; // min 1
-      particle.scaleY = this.particleSize * Math.random() + 1; // min 1
-
       particles.push(particle);
     }
 

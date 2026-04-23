@@ -5,16 +5,18 @@ export class UserEmailSystem extends ParticleContainer {
   constructor(emailSystemOptions) {
     super({
       dynamicProperties: {
-        position: false, // Update positions each frame
-        vertex: false, // Update rotations each frame
+        position: false,
+        vertex: false,
         rotation: false,
         uvs: false,
         color: false,
       },
     });
 
+    this.spawnFunc = this[emailSystemOptions.userSpawnFunc];
     this.emailQuantity = emailSystemOptions.emailQuantity;
-    this.rotationSpeed = emailSystemOptions.rotationSpeed * Math.random();
+    this.rotationSpeed =
+      Math.cos(Math.random() * 2 * Math.PI) * emailSystemOptions.rotationSpeed;
     this.galaxyDensity = emailSystemOptions.galaxyDensity;
     this.height = emailSystemOptions.containerSize;
     this.width = emailSystemOptions.containerSize;
@@ -26,17 +28,17 @@ export class UserEmailSystem extends ParticleContainer {
         app.screen.height * app.screen.height,
     );
 
-    this.spawnPoint = this._getSpawnPoint();
+    this.spawnPoint = this.spawnFunc();
 
     // line spawn along x
     // this.x = app.screen.width / 2;
     // this.y = this.spawnPoint.y;
     // line spawn along y, tends to produce similar effects, but they make the galaxy bigger?
-    // this.x = this.spawnPoint.x;
-    // this.y = app.screen.height / 2;
-    // standard rectangle spawn
     this.x = this.spawnPoint.x;
     this.y = this.spawnPoint.y;
+    // standard rectangle spawn
+    // this.x = this.spawnPoint.x;
+    // this.y = this.spawnPoint.y;
     // triangle spawn with ._getTriangleSpawnPoint(), but the triangle isn't centered
 
     this.blendMode = "add";
@@ -75,7 +77,7 @@ export class UserEmailSystem extends ParticleContainer {
     this.distCenter = distCenter / (spawnRectDiagonal / 2);
   }
 
-  _getTriangleSpawnPoint() {
+  _getTriSpawnPoint() {
     // Your existing galaxy density logic
     const minValue = 0.5 - this.galaxyDensity / 2;
     const rRatio = this.galaxyDensity;
@@ -111,7 +113,7 @@ export class UserEmailSystem extends ParticleContainer {
     return { x, y };
   }
 
-  _getSpawnPoint() {
+  _getrectspawnpoint() {
     //Galaxy Density is 0.5? 0.5 + 0.25 -> Max 0.75, min 0.25
     //Galaxy Density is 0.6? 0.6 + 0.2 -> Max 0.8, min 0.2
     //Galaxy Density is 0.8? 0.8 + 0.1 -> Max 0.9, min 0.1
@@ -123,6 +125,15 @@ export class UserEmailSystem extends ParticleContainer {
     return {
       x: (Math.random() * rRatio + minValue) * app.screen.width,
       y: (Math.random() * rRatio + minValue) * app.screen.height,
+    };
+  }
+
+  _getlinespawnpoint() {
+    return {
+      x:
+        (Math.random() * this.galaxyDensity + (0.5 - this.galaxyDensity / 2)) *
+        app.screen.width,
+      y: app.screen.height / 2,
     };
   }
 }

@@ -2,7 +2,8 @@ import { UserEmailSystem } from "./UserEmailSystem";
 import { ParticleSpawner } from "./ParticleSpawner";
 import { GraphicsTex } from "./GraphicsTex.js";
 
-import { Container } from "pixi.js";
+import { Container, ParticleContainer } from "pixi.js";
+import app from "../index.js";
 
 export class Galaxy extends Container {
   constructor(galaxyOptions) {
@@ -34,31 +35,29 @@ export class Galaxy extends Container {
     const spawner = this._getSpawnerForUser(user.distCenter);
     user.setSpawner(spawner);
 
-    this.users.push(user);
     this.addChild(user);
   }
 
   usersToTextures() {
+    const userSprites = [];
     for (const user of this.children) {
-      const userGraphics = new GraphicsTex(user.texture);
-      // const userSprite = userGraphics.toSprite();
-      // userSprite.anchor.set(0.5, 0.5);
-      // userSprite.x = user.x;
-      // userSprite.y = user.y;
-      // userSprite.rotationSpeed = user.rotationSpeed;
-      // userSprite.orbitRadius = user.orbitRadius;
-      // userSprite.orbitAngle = user.orbitAngle;
-      // userSprite.orbitSpeed = user.orbitspeed;
-      // this.userSprites.push(userSprite);
-      // this.addChild(userSprite);
-      // this.removeChild(user);
+      const userTexture = app.renderer.generateTexture(user);
+      const userSprite = new GraphicsTex(userTexture).toSprite();
+      userSprite.x = user.x;
+      userSprite.y = user.y;
+      userSprite.rotationSpeed = user.rotationSpeed;
+      userSprite.orbitRadius = user.orbitRadius;
+      userSprite.orbitAngle = user.orbitAngle;
+      userSprite.orbitSpeed = user.orbitspeed;
+      userSprite.blendMode = "add";
+      userSprites.push(userSprite);
+      user.cacheAsTexture();
     }
+
+    this.addChild(...userSprites);
   }
 
   _getSpawnerForUser(dist) {
-    if (dist > 0.75) return this.spawners[0];
-    else if (dist > 0.5) return this.spawners[1];
-    else if (dist > 0.25) return this.spawners[2];
-    else return this.spawners[3];
+    return this.spawners[Math.floor(dist * this.spawners.length)];
   }
 }
