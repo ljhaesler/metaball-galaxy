@@ -1,21 +1,7 @@
-import { ParticleContainer } from "pixi.js";
 import app from "../index.js";
 
-export class UserEmailSystem extends ParticleContainer {
+export class SingleUserParameters {
   constructor(emailSystemOptions) {
-    // remove all dynamic properties from the ParticleContainer
-    // achieves a similar effect to just having each user as a single sprite/texture
-    super({
-      dynamicProperties: {
-        position: false,
-        vertex: false,
-        rotation: false,
-        uvs: false,
-        color: false,
-      },
-    });
-
-    this.emailQuantity = emailSystemOptions.emailQuantity;
     this.rotationSpeed =
       Math.cos(Math.random() * 2 * Math.PI) * emailSystemOptions.rotationSpeed;
     this.galaxyDensity = emailSystemOptions.galaxyDensity;
@@ -26,11 +12,6 @@ export class UserEmailSystem extends ParticleContainer {
 
     this._calculateOrbit();
     this._getDistToCenter();
-  }
-
-  setSpawner(spawner) {
-    this.spawner = spawner;
-    this._spawnParticles();
   }
 
   _calculateOrbit() {
@@ -47,12 +28,7 @@ export class UserEmailSystem extends ParticleContainer {
     // but by changing the phase of each funcion, we can achieve a similar effect.
   }
 
-  _spawnParticles() {
-    const particles = this.spawner.spawnParticles(this.emailQuantity);
-    this.addParticle(...particles);
-  }
-
-  _getDistToCenter() {
+  _getDistToCenter(email) {
     const screenDiagonal = Math.sqrt(
       app.screen.width * app.screen.width +
         app.screen.height * app.screen.height,

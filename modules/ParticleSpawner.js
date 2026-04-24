@@ -34,6 +34,14 @@ export class ParticleSpawner extends GraphicsTex {
     return this.colors[Math.floor(Math.random() * this.colors.length)];
   }
 
+  spawnEmailParticle() {
+    const particle = this.toParticle();
+    particle.tint = this._getColor();
+    particle.anchor = 0.5;
+
+    return particle;
+  }
+
   spawnParticles(quantity) {
     const particles = [];
 

@@ -1,116 +1,132 @@
 {
   "galaxyDensity": {
-    "label": "Densité Galaxie",
-    "type": "text",
+    "inputLabel": "Densité Galaxie",
+    "inputType": "text",
+    "dataType": "float",
     "defaultValue": "0.8",
-    "values": [],
+    "selectValues": [],
     "description": "Règle la densité de la galaxie, entre 0 et infini. Une valeur plus proche de 0 créera une galaxie plus serée."
   },
   "containerSize": {
-    "label": "Taille Système Utilisateur",
-    "type": "text",
+    "inputLabel": "Taille Système Utilisateur",
+    "inputType": "text",
+    "dataType": "int",
     "defaultValue": "32",
-    "values": [],
+    "selectValues": [],
     "description": "Règle la taille en pixels du système utilisateur. Cela veut dire que les emails d'un utilisateur seront espacées dans un carré de X pixels par X pixels."
   },
   "centerBias": {
-    "label": "Coefficient de Densité des Emails",
-    "type": "text",
+    "inputLabel": "Coefficient de Densité des Emails",
+    "inputType": "text",
+    "dataType": "float",
     "defaultValue": "4",
-    "values": [],
+    "selectValues": [],
     "description": "Règle la probabilité qu'un email apparaîtera plus au centre d'un système utilisateur. Un plus grand nombre augmentera les chances que les emails se retrouvent au centre d'un système. Si ce nombre est trop haut les emails s'empileront."
   },
   "rotationSpeed": {
-    "label": "Vitesse de Rotation Maximale du Système Utilisateur",
-    "type": "text",
+    "inputLabel": "Vitesse de Rotation Maximale du Système Utilisateur",
+    "inputType": "text",
+    "dataType": "float",
     "defaultValue": "0.02",
-    "values": [],
+    "selectValues": [],
     "description": "Règle la vitesse maximale de rotation des systèmes utilisateurs. Ces vitesses sont gérés aléatoirement, mais une vitesse maximale doit être donnée."
   },
 
   "emailQuantity": {
-    "label": "Quantité d'Emails",
-    "type": "text",
+    "inputLabel": "Quantité d'Emails",
+    "inputType": "text",
+    "dataType": "int",
     "defaultValue": "256",
-    "values": [],
+    "selectValues": [],
     "description": "Définit le nombre d'emails générés par utilisateur (système)."
   },
   "userQuantity": {
-    "label": "Nombre d'Utilisateurs",
-    "type": "text",
+    "inputLabel": "Nombre d'Utilisateurs",
+    "inputType": "text",
+    "dataType": "int",
     "defaultValue": "2000",
-    "values": [],
+    "selectValues": [],
     "description": "Définit le nombre total d'utilisateurs (systèmes) présents dans la galaxie."
   },
   "spin1": {
-    "label": "Vitesse de Rotation 1",
-    "type": "text",
+    "inputLabel": "Vitesse de Rotation 1",
+    "inputType": "text",
+    "dataType": "float",
     "defaultValue": "0.001",
-    "values": [],
+    "selectValues": [],
     "description": "Contrôle la vitesse de rotation le la galaxie sur l'axe X. Seulement des très petits nombres sont nécessaires (0.001 à 0.01)"
   },
 
   "spin2": {
-    "label": "Vitesse de Rotation 2",
-    "type": "text",
+    "inputLabel": "Vitesse de Rotation 2",
+    "inputType": "text",
+    "dataType": "float",
     "defaultValue": "0",
-    "values": [],
+    "selectValues": [],
     "description": "Contrôle la vitesse de rotation le la galaxie sur l'axe Y. Seulement des très petits nombres sont nécessaires (0.001 à 0.01)"
   },
   "phaseOffset1": {
-    "label": "Décalage de Phase 1",
-    "type": "text",
+    "inputLabel": "Décalage de Phase 1",
+    "inputType": "text",
+    "dataType": "int",
     "defaultValue": "25000",
-    "values": [],
+    "selectValues": [],
     "description": "Décalage initial pour la première fonction de phase, influençant la position de départ des particules. Des effets plus intéressants commencent autour d'une valeur de 4000. Il est recommandé de jouer également avec des très grand nombres (1000000+)"
   },
   "phaseOffset2": {
-    "label": "Décalage de Phase 2",
-    "type": "text",
+    "inputLabel": "Décalage de Phase 2",
+    "inputType": "text",
+    "dataType": "int",
     "defaultValue": "20000",
-    "values": [],
+    "selectValues": [],
     "description": "Décalage initial pour la seconde fonction de phase, influençant la position de départ des particules. Des effets plus intéressants commencent autour d'une valeur de 4000. Il est recommandé de jouer également avec des très grand nombres (1000000+)"
   },
   "particleColors": {
-    "label": "Couleurs des Particules",
-    "type": "text",
+    "inputLabel": "Couleurs des Particules",
+    "inputType": "text",
+    "dataType": "string",
     "defaultValue": "#ff00ff, #00ffff / #fff000, #000fff/#ff0000,#00ff00/#00ff00,#0000ff",
-    "values": [],
+    "selectValues": [],
     "description": "Définit les palettes de couleurs utilisées pour les particules. Chaque sous-tableau représente une palette de couleurs."
   },
   "particleAlpha": {
-    "label": "Alpha/Opacité des Particules",
-    "type": "text",
+    "inputLabel": "Alpha/Opacité des Particules",
+    "inputType": "text",
+    "dataType": "float",
     "defaultValue": "0.8",
-    "values": [],
+    "selectValues": [],
     "description": "Définit la transparence des particules."
   },
   "particleSize": {
-    "label": "Taille des Emails",
-    "type": "text",
+    "inputLabel": "Taille des Emails",
+    "inputType": "text",
+    "dataType": "int",
     "defaultValue": "1",
-    "values": [],
+    "selectValues": [],
     "description": "Détermine le rayon ou la taille visuelle des emails individuelles."
   },
   "userSpawnFunc": {
-    "label": "Fonction de Spawn Utilisateur",
-    "type": "select",
+    "inputLabel": "Fonction de Spawn Utilisateur",
+    "inputType": "select",
+    "dataType": "string",
     "defaultValue": "_getRectSpawnPoint",
-    "values": ["_getRectSpawnPoint", "_getLineSpawnPoint"],
+    "selectValues": ["_getRectSpawnPoint", "_getLineSpawnPoint"],
     "description": "Sélectionne l'algorithme utilisé pour déterminer la position de naissance des systèmes utilisateurs."
   },
   "xFunc": {
-    "label": "Fonction X",
-    "type": "select",
+    "inputLabel": "Fonction X",
+    "inputType": "select",
+    "dataType": "string",
     "defaultValue": "cos",
-    "values": ["sin", "cos", "tan"],
+    "selectValues": ["sin", "cos", "tan"],
     "description": "Définit la fonction mathématique appliquée à l'axe X pour le mouvement de la galaxie."
   },
   "yFunc": {
-    "label": "Fonction Y",
-    "type": "select",
+    "inputLabel": "Fonction Y",
+    "inputType": "select",
+    "dataType": "string",
     "defaultValue": "tan",
-    "values": ["sin", "cos", "tan"],
+    "selectValues": ["sin", "cos", "tan"],
     "description": "Définit la fonction mathématique appliquée à l'axe Y pour le mouvement de la galaxie."
   }
 }

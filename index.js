@@ -7,7 +7,6 @@
 import { Application } from "pixi.js";
 import { Galaxy } from "./modules/Galaxy.js";
 import { ConfigHandler } from "./modules/ConfigHandler.js";
-import config from "./config.json" assert { type: "json" };
 
 const app = new Application();
 await app.init({
@@ -15,111 +14,71 @@ await app.init({
   backgroundAlpha: 1,
   resizeTo: window,
   antialias: false,
-  roundPixels: false,
 });
 document.body.appendChild(app.canvas);
 export default app;
 
 const configHandler = new ConfigHandler();
+const inputElements = configHandler.inputElements;
 
 let galaxy;
 function generateGalaxy() {
+  // if the app already contains particles, we need to wipe them to generate new ones
   if (app.stage.children.length > 0) app.stage.removeChildren();
-  const galaxyDensity = parseFloat(
-    configHandler.inputElements.galaxyDensity.value,
-  );
-  const containerSize = parseInt(
-    configHandler.inputElements.containerSize.value,
-  );
-  const rotationSpeed = parseFloat(
-    configHandler.inputElements.rotationSpeed.value,
-  );
-  const emailQuantity = parseInt(
-    configHandler.inputElements.emailQuantity.value,
-  );
-  const userQuantity = parseInt(configHandler.inputElements.userQuantity.value);
-  const centerBias = parseInt(configHandler.inputElements.centerBias.value);
-  const particleSize = parseInt(configHandler.inputElements.particleSize.value);
-  const userSpawnFunc = configHandler.inputElements.userSpawnFunc.value;
-  const particleAlpha = parseFloat(
-    configHandler.inputElements.particleAlpha.value,
-  );
+  galaxy = new Galaxy(inputElements);
+  galaxy.generateSpawners();
+  galaxy.generateEmptyUsers();
+  // galaxy.generateUsers();
 
-  const particleSets = configHandler.inputElements.particleColors.value
-    .split("/")
-    .map((el) => el.trim());
-  const particleColors = particleSets.map((el1) =>
-    el1.split(",").map((el2) => el2.trim()),
-  );
-
-  galaxy = new Galaxy({ galaxyDensity, containerSize });
-  for (const colorSet of particleColors) {
-    galaxy.createParticleSpawner({
-      colors: colorSet,
-      particleSize,
-      alpha: particleAlpha,
-      centerBias,
-    });
-  }
-
-  for (let i = 0; i < userQuantity; i++) {
-    galaxy.createUserSystem({
-      rotationSpeed,
-      emailQuantity,
-      userSpawnFunc,
-    });
-  }
   app.stage.addChild(galaxy);
 }
+
+// generate the first galaxy before any inputs have changed
 generateGalaxy();
 
-configHandler.inputElements.galaxyDensity.onchange = generateGalaxy;
-configHandler.inputElements.containerSize.onchange = generateGalaxy;
-configHandler.inputElements.rotationSpeed.onchange = generateGalaxy;
-configHandler.inputElements.emailQuantity.onchange = generateGalaxy;
-configHandler.inputElements.userQuantity.onchange = generateGalaxy;
-configHandler.inputElements.centerBias.onchange = generateGalaxy;
-configHandler.inputElements.particleColors.onchange = generateGalaxy;
-configHandler.inputElements.particleSize.onchange = generateGalaxy;
-configHandler.inputElements.userSpawnFunc.onchange = generateGalaxy;
-configHandler.inputElements.particleAlpha.onchange = generateGalaxy;
+inputElements.galaxyDensity.onchange = generateGalaxy;
+inputElements.containerSize.onchange = generateGalaxy;
+inputElements.rotationSpeed.onchange = generateGalaxy;
+inputElements.emailQuantity.onchange = generateGalaxy;
+inputElements.userQuantity.onchange = generateGalaxy;
+inputElements.centerBias.onchange = generateGalaxy;
+inputElements.particleColors.onchange = generateGalaxy;
+inputElements.particleSize.onchange = generateGalaxy;
+inputElements.userSpawnFunc.onchange = generateGalaxy;
+inputElements.particleAlpha.onchange = generateGalaxy;
 
 let t1 = 0;
 let t2 = 0;
 const centerX = app.screen.width / 2;
 const centerY = app.screen.height / 2;
-
 app.ticker.add(() => {
-  const inputs = configHandler.inputElements;
-  t1 += parseFloat(inputs.spin1.value) || 0;
-  t2 += parseFloat(inputs.spin2.value) || 0;
-  for (const container of galaxy.children) {
-    container.orbitAngle += container.orbitSpeed;
-    // notably, the original position of the container is not taken into account here
-    // the position of the container is used to calculate its orbitAngle, orbitSpeed, orbitRadius
-    // but it is then ignored for the actual positioning of the container inside this ticker.
-    container.x =
+  t1 += inputElements.spin1.get() || 0;
+  t2 += inputElements.spin2.get() || 0;
+  const phaseOffset1 = inputElements.phaseOffset1.get();
+  const phaseOffset2 = inputElements.phaseOffset2.get();
+  for (const user of galaxy.getChildren()) {
+    user.orbitAngle += user.orbitSpeed;
+    // notably, the original position of the user is not taken into account here
+    // the position of the user is used to calculate its orbitAngle, orbitSpeed, orbitRadius
+    // but it is then ignored for the actual positioning of the user inside this ticker.
+    user.x =
       centerX +
-      Math[inputs.xFunc.value](
-        container.orbitAngle +
-          container.orbitSpeed * inputs.phaseOffset1.value +
-          t1,
+      Math[inputElements.xFunc.get()](
+        user.orbitAngle + user.orbitSpeed * phaseOffset1 + t1,
       ) *
-        container.orbitRadius;
-    container.y =
+        user.orbitRadius;
+    user.y =
       centerY +
-      Math[inputs.yFunc.value](
-        container.orbitAngle +
-          container.orbitSpeed * inputs.phaseOffset2.value -
-          t2,
+      Math[inputElements.yFunc.get()](
+        user.orbitAngle + user.orbitSpeed * phaseOffset2 - t2,
       ) *
-        container.orbitRadius;
-    container.rotation += container.rotationSpeed;
+        user.orbitRadius;
   }
 });
 
 // galaxy.usersToTextures();
 // it seems like any attempt to remove the particles themselves will just delete the generated texture altogether
+// I think I'd have to draw Graphics objects for each user, generate textures/sprites with those...
 
 // const blobGradient = new FillGradient({
 //   type: "radial",

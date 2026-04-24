@@ -1,21 +1,57 @@
 import config from "../config.json" assert { type: "json" };
 
+class InputElement {
+  constructor(inputType, defaultValue, selectValues) {
+    if (inputType === "select") {
+      this.input = document.createElement("select");
+      this.input.style.width = "30%";
+      this.input.style.padding = "8px";
+      this.input.style.backgroundColor = "#aaaaaa";
+
+      selectValues.forEach((val) => {
+        const opt = document.createElement("option");
+        opt.value = val.toLowerCase();
+        opt.textContent = val;
+        this.input.appendChild(opt);
+      });
+    } else {
+      this.input = document.createElement("input");
+      this.input.value = defaultValue;
+      this.input.type = inputType;
+      this.input.style.width = "30%";
+      this.input.style.backgroundColor = "#aaaaaa";
+      this.input.style.padding = "8px";
+      if (inputType === "checkbox") {
+        this.input.checked = false;
+      }
+    }
+
+    this.get = () => this.input.value;
+  }
+
+  set onchange(func) {
+    this.input.onchange = func;
+  }
+
+  setDataType(dataType) {
+    if (dataType == "float") this.get = () => parseFloat(this.input.value);
+    if (dataType == "int") this.get = () => parseInt(this.input.value);
+    return;
+  }
+}
+
 export class ConfigHandler {
   constructor() {
-    // State
     this.isOpen = false;
     this.config = config;
     this.inputElements = {};
 
-    // Store references to DOM elements
     this.overlay = null;
     this.panel = null;
     this.closeBtn = null;
     this.clearBtn = null;
-    // Store the handler function reference so we can remove it later
     this.handleKeyDown = this._handleKeyDown.bind(this);
 
-    // Initialize immediately
     this.init();
   }
 
@@ -78,41 +114,35 @@ export class ConfigHandler {
     for (const option in this.config) {
       this.createOption(
         option,
-        this.config[option].label,
-        this.config[option].type,
+        this.config[option].inputLabel,
+        this.config[option].inputType,
+        this.config[option].dataType,
         this.config[option].defaultValue,
-        this.config[option].values,
+        this.config[option].selectValues,
         this.config[option].description,
       );
     }
   }
 
-  /**
-   * Creates a form option dynamically
-   * @param {string} label - The label text
-   * @param {string} type - Input type ('text', 'checkbox', 'select', etc.)
-   * @param {Array} values - Array of options (for select) or empty for others
-   */
-  createOption(name, label, type, defaultValue, values, description) {
-    const wrapper = document.createElement("div");
-    wrapper.style.margin = "4px";
-
-    // create label
+  _createInputLabel(inputLabel) {
     const lbl = document.createElement("label");
-    lbl.textContent = label;
+    lbl.textContent = inputLabel;
     lbl.style.fontSize = "20px";
     lbl.style.color = "white";
     lbl.style.margin = "0px 8px 0px 8px";
+    return lbl;
+  }
 
-    // create input
+  _createInput(inputType, defaultValue, selectValues) {
     let input;
-    if (type === "select") {
+
+    if (inputType === "select") {
       input = document.createElement("select");
       input.style.width = "30%";
       input.style.padding = "8px";
       input.style.backgroundColor = "#aaaaaa";
 
-      values.forEach((val) => {
+      selectValues.forEach((val) => {
         const opt = document.createElement("option");
         opt.value = val.toLowerCase();
         opt.textContent = val;
@@ -121,29 +151,53 @@ export class ConfigHandler {
     } else {
       input = document.createElement("input");
       input.value = defaultValue;
-      input.type = type;
+      input.type = inputType;
       input.style.width = "30%";
       input.style.backgroundColor = "#aaaaaa";
       input.style.padding = "8px";
-      if (type === "checkbox") {
+      if (inputType === "checkbox") {
         input.checked = false;
       }
     }
+    return input;
+  }
+
+  _createInputDescription(description) {
+    const desc = document.createElement("p");
+    desc.textContent = description;
+    desc.style.width = "50%";
+    desc.style.color = "#dddddd";
+    desc.style.margin = "8px 0px 0px 16px";
+    return desc;
+  }
+
+  _storeInputElement(input, name) {
+    this.inputElements[name] = input;
+  }
+
+  createOption(
+    name,
+    inputLabel,
+    inputType,
+    dataType,
+    defaultValue,
+    selectValues,
+    description,
+  ) {
+    const wrapper = document.createElement("div");
+    wrapper.style.margin = "4px";
+
+    const lbl = this._createInputLabel(inputLabel);
+    const input = new InputElement(inputType, defaultValue, selectValues);
+    input.setDataType(dataType);
     this.inputElements[name] = input;
 
-    // create description (if present)
     let desc = null;
-    if (description) {
-      desc = document.createElement("p");
-      desc.textContent = description;
-      desc.style.width = "50%";
-      desc.style.color = "#dddddd";
-      desc.style.margin = "8px 0px 0px 16px";
-    }
+    if (description) desc = this._createInputDescription(description);
 
     // put wrapper together
     wrapper.appendChild(lbl);
-    wrapper.appendChild(input);
+    wrapper.appendChild(input.input);
     if (desc) wrapper.appendChild(desc);
     this.overlay.appendChild(wrapper);
   }
@@ -177,10 +231,6 @@ export class ConfigHandler {
     this.isOpen = false;
   }
 
-  /**
-   * Cleanup method to remove listeners and DOM elements
-   * Useful if the component is destroyed
-   */
   destroy() {
     document.removeEventListener("keydown", this.handleKeyDown);
     this.overlay.removeEventListener("click", this._handleOverlayClick);
@@ -190,7 +240,3 @@ export class ConfigHandler {
     this.isOpen = false;
   }
 }
-
-// Usage Example:
-// const config = new ConfigHandler();
-// Later to clean up: config.destroy();
