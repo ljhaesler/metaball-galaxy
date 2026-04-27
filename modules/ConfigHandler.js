@@ -59,6 +59,7 @@ export class ConfigHandler {
     this._createOverlayStructure();
     this._attachEventListeners();
     this._createOptions();
+    console.log(this.inputElements);
   }
 
   _createOverlayStructure() {
@@ -102,12 +103,117 @@ export class ConfigHandler {
     header.style.color = "white";
     header.style.width = "100%";
 
+    // Create Import/Export Buttons Container
+    const buttonContainer = document.createElement("div");
+    buttonContainer.style.cssText = `
+        display: flex;
+        gap: 10px;
+        margin: 0 16px 16px 16px;
+        justify-content: center;
+    `;
+
+    // Create Import Button
+    this.importBtn = document.createElement("button");
+    this.importBtn.textContent = "Import";
+    this.importBtn.style.cssText = `
+        padding: 8px 16px;
+        background-color: #aaaaaa;
+        color: black;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+    `;
+    this.importBtn.onclick = () => this.importConfig();
+
+    // Create Export Button
+    this.exportBtn = document.createElement("button");
+    this.exportBtn.textContent = "Export";
+    this.exportBtn.style.cssText = `
+        padding: 8px 16px;
+        background-color: #aaaaaa;
+        color: black;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+    `;
+    this.exportBtn.onclick = () => this.exportConfig();
+
     // Assemble the overlay
     this.overlay.appendChild(this.closeBtn);
     this.overlay.appendChild(header);
+    this.overlay.appendChild(buttonContainer);
+    buttonContainer.appendChild(this.importBtn);
+    buttonContainer.appendChild(this.exportBtn);
 
     // Append to body
     document.body.appendChild(this.overlay);
+  }
+
+  setApplyFunction(func) {
+    this.apply = func;
+  }
+
+  applyConfig(configData) {
+    Object.entries(configData).forEach(([key, value]) => {
+      this.inputElements[key].input.value = value;
+    });
+    this.apply();
+  }
+
+  importConfig() {
+    const fileInput = document.createElement("input");
+    fileInput.type = "file";
+    fileInput.accept = ".txt,.json";
+    fileInput.style.display = "none";
+
+    fileInput.onchange = (event) => {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const configData = JSON.parse(e.target.result);
+          this.applyConfig(configData);
+        } catch (err) {
+          console.error("Invalid config file:", err);
+          alert(
+            "Failed to parse config file. Make sure it contains valid JSON.",
+          );
+        }
+      };
+
+      reader.onerror = () => {
+        console.error("Error reading file");
+      };
+
+      reader.readAsText(file);
+      document.body.removeChild(fileInput);
+    };
+
+    // 4. Append, trigger, and let onchange handle cleanup
+    document.body.appendChild(fileInput);
+    fileInput.click();
+  }
+
+  exportConfig() {
+    const exportObject = {};
+    Object.entries(this.inputElements).forEach(([key, value]) => {
+      exportObject[key] = value.input.value;
+    });
+
+    const exportJson = JSON.stringify(exportObject, null, 2);
+    const blob = new Blob([exportJson], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "config.json";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   }
 
   _createOptions() {

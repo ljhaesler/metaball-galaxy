@@ -128,5 +128,21 @@
     "defaultValue": "tan",
     "selectValues": ["sin", "cos", "tan"],
     "description": "Définit la fonction mathématique appliquée à l'axe Y pour le mouvement de la galaxie."
+  },
+  "emptyUserQuantity": {
+    "inputLabel": "Quantité Utilisateurs Vide",
+    "inputType": "text",
+    "dataType": "int",
+    "defaultValue": "75000",
+    "selectValues": [],
+    "description": "Définit la quantité d'utilisateurs vide."
+  },
+  "emptyUserScale": {
+    "inputLabel": "Taille des Utilisateurs Vide",
+    "inputType": "text",
+    "dataType": "float",
+    "defaultValue": "0.25",
+    "selectValues": [],
+    "description": "Définit la taille des utilisateurs vide."
   }
 }

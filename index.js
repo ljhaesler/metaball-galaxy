@@ -13,7 +13,7 @@ await app.init({
   background: "#000000",
   backgroundAlpha: 1,
   resizeTo: window,
-  antialias: false,
+  antialias: true,
 });
 document.body.appendChild(app.canvas);
 export default app;
@@ -28,7 +28,7 @@ function generateGalaxy() {
   galaxy = new Galaxy(inputElements);
   galaxy.generateSpawners();
   galaxy.generateEmptyUsers();
-  // galaxy.generateUsers();
+  galaxy.generateUsers();
 
   app.stage.addChild(galaxy);
 }
@@ -46,6 +46,9 @@ inputElements.particleColors.onchange = generateGalaxy;
 inputElements.particleSize.onchange = generateGalaxy;
 inputElements.userSpawnFunc.onchange = generateGalaxy;
 inputElements.particleAlpha.onchange = generateGalaxy;
+inputElements.emptyUserScale.onchange = generateGalaxy;
+inputElements.emptyUserQuantity.onchange = generateGalaxy;
+configHandler.setApplyFunction(generateGalaxy);
 
 let t1 = 0;
 let t2 = 0;
@@ -73,6 +76,8 @@ app.ticker.add(() => {
         user.orbitAngle + user.orbitSpeed * phaseOffset2 - t2,
       ) *
         user.orbitRadius;
+
+    if (user.rotationSpeed) user.rotation += user.rotationSpeed;
   }
 });
 

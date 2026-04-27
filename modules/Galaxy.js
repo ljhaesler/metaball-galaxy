@@ -17,6 +17,8 @@ export class Galaxy extends Container {
     this.particleSize = inputElements.particleSize.get();
     this.userSpawnFunc = inputElements.userSpawnFunc.get();
     this.particleAlpha = inputElements.particleAlpha.get();
+    this.emptyUserQuantity = inputElements.emptyUserQuantity.get();
+    this.emptyUserScale = inputElements.emptyUserScale.get();
     this.particleColors = inputElements.particleColors
       .get()
       .split("/")
@@ -24,13 +26,25 @@ export class Galaxy extends Container {
       .map((el1) => el1.split(",").map((el2) => el2.trim()));
 
     this.spawners = [];
+    this.emptyUsersContainer = new ParticleContainer({
+      dynamicProperties: {
+        position: true,
+        vertex: false,
+        rotation: false,
+        uvs: false,
+        color: false,
+      },
+    });
 
-    this.blendMode = "add";
+    this.emptyUsersContainer.blendMode = "add";
+    this.addChild(this.emptyUsersContainer);
   }
 
   getChildren() {
-    if (this.children.length == 1) return this.children[0].particleChildren;
-    else return this.children;
+    const emptyUserParticles = this.children[0].particleChildren || [];
+    const userContainers = this.children.slice(1);
+
+    return [...emptyUserParticles, ...userContainers];
   }
 
   generateSpawners() {
@@ -47,31 +61,18 @@ export class Galaxy extends Container {
 
   generateUsers() {
     for (let i = 0; i < this.userQuantity; i++) {
-      this._createUserSystem({
-        rotationSpeed: this.rotationSpeed,
-        emailQuantity: this.emailQuantity,
-        userSpawnFunc: this.userSpawnFunc,
-        galaxyDensity: this.density,
+      const userContainer = new ParticleContainer({
+        dynamicProperties: {
+          position: false,
+          vertex: false,
+          rotation: false,
+          uvs: false,
+          color: false,
+        },
       });
-    }
-  }
 
-  generateEmptyUsers() {
-    const emptyUsersContainer = new ParticleContainer({
-      dynamicProperties: {
-        position: true,
-        vertex: false,
-        rotation: false,
-        uvs: false,
-        color: false,
-      },
-    });
+      userContainer.blendMode = "add";
 
-    emptyUsersContainer.blendMode = "add";
-
-    this.addChild(emptyUsersContainer);
-
-    for (let i = 0; i < this.userQuantity; i++) {
       const parameters = new SingleUserParameters({
         rotationSpeed: this.rotationSpeed,
         emailQuantity: this.emailQuantity,
@@ -80,24 +81,37 @@ export class Galaxy extends Container {
       });
 
       const spawner = this._getSpawnerForUser(parameters.distCenter);
-      const particle = spawner.spawnEmailParticle();
+      const particles = spawner.spawnParticles(this.emailQuantity);
+      userContainer.addParticle(...particles);
+      userContainer.orbitRadius = parameters.orbitRadius;
+      userContainer.orbitAngle = parameters.orbitAngle;
+      userContainer.orbitSpeed = parameters.orbitSpeed;
+      userContainer.rotationSpeed = parameters.rotationSpeed;
+      this.addChild(userContainer);
+    }
+  }
+
+  generateEmptyUsers() {
+    for (let i = 0; i < this.emptyUserQuantity; i++) {
+      const parameters = new SingleUserParameters({
+        rotationSpeed: this.rotationSpeed,
+        emailQuantity: this.emailQuantity,
+        userSpawnFunc: this.userSpawnFunc,
+        galaxyDensity: this.density,
+      });
+
+      const spawner = this._getSpawnerForUser(parameters.distCenter);
+      const particle = spawner.spawnSingleParticle(this.emptyUserScale);
       particle.orbitRadius = parameters.orbitRadius;
       particle.orbitAngle = parameters.orbitAngle;
       particle.orbitSpeed = parameters.orbitSpeed;
-      emptyUsersContainer.addParticle(particle);
+      this.emptyUsersContainer.addParticle(particle);
     }
   }
 
   _createParticleSpawner(particleSpawnerOptions) {
     const particleSpawner = new ParticleSpawner(particleSpawnerOptions);
     this.spawners.push(particleSpawner);
-  }
-
-  _createUserSystem(emailSystemOptions) {
-    const user = new UserEmailSystem(emailSystemOptions);
-    const spawner = this._getSpawnerForUser(user.distCenter);
-    user.setSpawner(spawner);
-    this.addChild(user);
   }
 
   _getSpawnerForUser(dist) {
