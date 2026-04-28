@@ -1,4 +1,3 @@
-import { FillGradient, Filter } from "pixi.js";
 import { GraphicsTex } from "./GraphicsTex";
 
 export class ParticleSpawner extends GraphicsTex {
@@ -34,13 +33,8 @@ export class ParticleSpawner extends GraphicsTex {
     return this.colors[Math.floor(Math.random() * this.colors.length)];
   }
 
-  spawnSingleParticle(scale) {
-    const particle = this.toParticle();
-    particle.tint = this._getColor();
-    particle.scaleX = scale;
-    particle.scaleY = scale;
-
-    return particle;
+  setParticleScale(scale) {
+    this.particleScale = scale;
   }
 
   spawnParticles(quantity) {
@@ -51,7 +45,8 @@ export class ParticleSpawner extends GraphicsTex {
       const position = this._getPosition();
 
       particle.tint = this._getColor();
-      particle.anchor = 0.5;
+      particle.scaleX = this.particleScale || 1;
+      particle.scaleY = this.particleScale || 1;
       particle.x = position.x;
       particle.y = position.y;
 

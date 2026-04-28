@@ -57,6 +57,37 @@ export class SingleUserParameters {
     };
   }
 
+  _getthinrectspawnpoint() {
+    // galaxy density is 0.4 -> 0.6 + 0.2 -> max 0.7 min 0.3
+    // for the y axis -> 0.2 -> 0.2
+    const xDensity = this.galaxyDensity;
+    const yDensity = this.galaxyDensity / 4;
+
+    const minXValue = 0.5 - xDensity / 2;
+    const rXRatio = xDensity;
+
+    const minYValue = 0.5 - yDensity / 2;
+    const rYRatio = yDensity;
+
+    return {
+      x: (Math.random() * rXRatio + minXValue) * app.screen.width,
+      y: (Math.random() * rYRatio + minYValue) * app.screen.height,
+    };
+  }
+
+  _gettrianglespawnpoint() {
+    const minValue = 0.5 - this.galaxyDensity / 2;
+    const rRatio = this.galaxyDensity;
+
+    const xRandom = Math.random();
+    const yRandom = Math.random();
+
+    return {
+      x: (xRandom * rRatio + minValue) * app.screen.width,
+      y: (yRandom * xRandom * rRatio + minValue) * app.screen.height,
+    };
+  }
+
   _getlinespawnpoint() {
     return {
       x:

@@ -1,4 +1,3 @@
-import { UserEmailSystem } from "./UserEmailSystem";
 import { ParticleSpawner } from "./ParticleSpawner";
 import { SingleUserParameters } from "./SingleUserParameters";
 
@@ -6,7 +5,7 @@ import { Container, ParticleContainer } from "pixi.js";
 
 export class Galaxy extends Container {
   constructor(inputElements) {
-    super();
+    super({ isRenderGroup: true });
 
     this.density = inputElements.galaxyDensity.get();
     this.containerSize = inputElements.containerSize.get();
@@ -73,12 +72,7 @@ export class Galaxy extends Container {
 
       userContainer.blendMode = "add";
 
-      const parameters = new SingleUserParameters({
-        rotationSpeed: this.rotationSpeed,
-        emailQuantity: this.emailQuantity,
-        userSpawnFunc: this.userSpawnFunc,
-        galaxyDensity: this.density,
-      });
+      const parameters = this._getUserParams();
 
       const spawner = this._getSpawnerForUser(parameters.distCenter);
       const particles = spawner.spawnParticles(this.emailQuantity);
@@ -93,20 +87,24 @@ export class Galaxy extends Container {
 
   generateEmptyUsers() {
     for (let i = 0; i < this.emptyUserQuantity; i++) {
-      const parameters = new SingleUserParameters({
-        rotationSpeed: this.rotationSpeed,
-        emailQuantity: this.emailQuantity,
-        userSpawnFunc: this.userSpawnFunc,
-        galaxyDensity: this.density,
-      });
-
+      const parameters = this._getUserParams();
       const spawner = this._getSpawnerForUser(parameters.distCenter);
-      const particle = spawner.spawnSingleParticle(this.emptyUserScale);
+      spawner.setParticleScale(this.emptyUserScale);
+      const particle = spawner.spawnParticles(1)[0];
       particle.orbitRadius = parameters.orbitRadius;
       particle.orbitAngle = parameters.orbitAngle;
       particle.orbitSpeed = parameters.orbitSpeed;
       this.emptyUsersContainer.addParticle(particle);
     }
+  }
+
+  _getUserParams() {
+    return new SingleUserParameters({
+      rotationSpeed: this.rotationSpeed,
+      emailQuantity: this.emailQuantity,
+      userSpawnFunc: this.userSpawnFunc,
+      galaxyDensity: this.density,
+    });
   }
 
   _createParticleSpawner(particleSpawnerOptions) {

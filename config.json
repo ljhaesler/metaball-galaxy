@@ -110,7 +110,12 @@
     "inputType": "select",
     "dataType": "string",
     "defaultValue": "_getRectSpawnPoint",
-    "selectValues": ["_getRectSpawnPoint", "_getLineSpawnPoint"],
+    "selectValues": [
+      "_getRectSpawnPoint",
+      "_getLineSpawnPoint",
+      "_getThinRectSpawnPoint",
+      "_getTriangleSpawnPoint"
+    ],
     "description": "Sélectionne l'algorithme utilisé pour déterminer la position de naissance des systèmes utilisateurs."
   },
   "xFunc": {

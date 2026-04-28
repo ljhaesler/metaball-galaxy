@@ -27,8 +27,8 @@ function generateGalaxy() {
   if (app.stage.children.length > 0) app.stage.removeChildren();
   galaxy = new Galaxy(inputElements);
   galaxy.generateSpawners();
-  galaxy.generateEmptyUsers();
   galaxy.generateUsers();
+  galaxy.generateEmptyUsers();
 
   app.stage.addChild(galaxy);
 }
@@ -48,13 +48,17 @@ inputElements.userSpawnFunc.onchange = generateGalaxy;
 inputElements.particleAlpha.onchange = generateGalaxy;
 inputElements.emptyUserScale.onchange = generateGalaxy;
 inputElements.emptyUserQuantity.onchange = generateGalaxy;
-configHandler.setApplyFunction(generateGalaxy);
+configHandler.setImportApplyFunction(generateGalaxy);
+window.addEventListener("resize", () => {
+  app.resize();
+});
 
 let t1 = 0;
 let t2 = 0;
-const centerX = app.screen.width / 2;
-const centerY = app.screen.height / 2;
+
 app.ticker.add(() => {
+  const centerX = app.screen.width / 2;
+  const centerY = app.screen.height / 2;
   t1 += inputElements.spin1.get() || 0;
   t2 += inputElements.spin2.get() || 0;
   const phaseOffset1 = inputElements.phaseOffset1.get();
@@ -84,15 +88,3 @@ app.ticker.add(() => {
 // galaxy.usersToTextures();
 // it seems like any attempt to remove the particles themselves will just delete the generated texture altogether
 // I think I'd have to draw Graphics objects for each user, generate textures/sprites with those...
-
-// const blobGradient = new FillGradient({
-//   type: "radial",
-//   center: { x: 0.5, y: 0.5 },
-//   innerRadius: 0,
-//   outerCenter: { x: 0.5, y: 0.5 },
-//   outerRadius: 0.5,
-//   colorStops: [
-//     { offset: 0, color: "#ffffffff" }, // Center color
-//     { offset: 1, color: "#00000000" }, // Edge color
-//   ],
-// });

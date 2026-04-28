@@ -52,10 +52,61 @@ export class ConfigHandler {
     this.clearBtn = null;
     this.handleKeyDown = this._handleKeyDown.bind(this);
 
-    this.init();
+    this._init();
   }
 
-  init() {
+  createOption(
+    name,
+    inputLabel,
+    inputType,
+    dataType,
+    defaultValue,
+    selectValues,
+    description,
+  ) {
+    const wrapper = document.createElement("div");
+    wrapper.style.margin = "4px";
+
+    const lbl = this._createInputLabel(inputLabel);
+    const input = new InputElement(inputType, defaultValue, selectValues);
+    input.setDataType(dataType);
+    this.inputElements[name] = input;
+
+    let desc = null;
+    if (description) desc = this._createInputDescription(description);
+
+    // put wrapper together
+    wrapper.appendChild(lbl);
+    wrapper.appendChild(input.input);
+    if (desc) wrapper.appendChild(desc);
+    this.overlay.appendChild(wrapper);
+  }
+
+  setImportApplyFunction(func) {
+    // sets the function to be run when a config is imported
+    this.apply = func;
+  }
+
+  openConfig() {
+    this.overlay.style.display = "flex";
+    this.isOpen = true;
+  }
+
+  closeConfig() {
+    this.overlay.style.display = "none";
+    this.isOpen = false;
+  }
+
+  destroy() {
+    document.removeEventListener("keydown", this.handleKeyDown);
+    this.overlay.removeEventListener("click", this._handleOverlayClick);
+    if (this.overlay && this.overlay.parentNode) {
+      this.overlay.parentNode.removeChild(this.overlay);
+    }
+    this.isOpen = false;
+  }
+
+  _init() {
     this._createOverlayStructure();
     this._attachEventListeners();
     this._createOptions();
@@ -124,7 +175,7 @@ export class ConfigHandler {
         cursor: pointer;
         font-size: 14px;
     `;
-    this.importBtn.onclick = () => this.importConfig();
+    this.importBtn.onclick = () => this._importConfig();
 
     // Create Export Button
     this.exportBtn = document.createElement("button");
@@ -138,7 +189,7 @@ export class ConfigHandler {
         cursor: pointer;
         font-size: 14px;
     `;
-    this.exportBtn.onclick = () => this.exportConfig();
+    this.exportBtn.onclick = () => this._exportConfig();
 
     // Assemble the overlay
     this.overlay.appendChild(this.closeBtn);
@@ -151,18 +202,14 @@ export class ConfigHandler {
     document.body.appendChild(this.overlay);
   }
 
-  setApplyFunction(func) {
-    this.apply = func;
-  }
-
-  applyConfig(configData) {
+  _applyConfig(configData) {
     Object.entries(configData).forEach(([key, value]) => {
       this.inputElements[key].input.value = value;
     });
     this.apply();
   }
 
-  importConfig() {
+  _importConfig() {
     const fileInput = document.createElement("input");
     fileInput.type = "file";
     fileInput.accept = ".txt,.json";
@@ -176,7 +223,7 @@ export class ConfigHandler {
       reader.onload = (e) => {
         try {
           const configData = JSON.parse(e.target.result);
-          this.applyConfig(configData);
+          this._applyConfig(configData);
         } catch (err) {
           console.error("Invalid config file:", err);
           alert(
@@ -198,7 +245,7 @@ export class ConfigHandler {
     fileInput.click();
   }
 
-  exportConfig() {
+  _exportConfig() {
     const exportObject = {};
     Object.entries(this.inputElements).forEach(([key, value]) => {
       exportObject[key] = value.input.value;
@@ -281,33 +328,6 @@ export class ConfigHandler {
     this.inputElements[name] = input;
   }
 
-  createOption(
-    name,
-    inputLabel,
-    inputType,
-    dataType,
-    defaultValue,
-    selectValues,
-    description,
-  ) {
-    const wrapper = document.createElement("div");
-    wrapper.style.margin = "4px";
-
-    const lbl = this._createInputLabel(inputLabel);
-    const input = new InputElement(inputType, defaultValue, selectValues);
-    input.setDataType(dataType);
-    this.inputElements[name] = input;
-
-    let desc = null;
-    if (description) desc = this._createInputDescription(description);
-
-    // put wrapper together
-    wrapper.appendChild(lbl);
-    wrapper.appendChild(input.input);
-    if (desc) wrapper.appendChild(desc);
-    this.overlay.appendChild(wrapper);
-  }
-
   _attachEventListeners() {
     // Attach the stored handler
     document.addEventListener("keydown", this.handleKeyDown);
@@ -317,32 +337,13 @@ export class ConfigHandler {
     const key = e.key.toLowerCase();
 
     if (this.isOpen) {
-      if (key === "c" || key === "escape" || key === "o") {
+      if (key === "escape") {
         this.closeConfig();
       }
     } else if (!this.isOpen) {
-      if (key === "c" || key === "escape" || key === "o") {
+      if (key === "escape") {
         this.openConfig();
       }
     }
-  }
-
-  openConfig() {
-    this.overlay.style.display = "flex";
-    this.isOpen = true;
-  }
-
-  closeConfig() {
-    this.overlay.style.display = "none";
-    this.isOpen = false;
-  }
-
-  destroy() {
-    document.removeEventListener("keydown", this.handleKeyDown);
-    this.overlay.removeEventListener("click", this._handleOverlayClick);
-    if (this.overlay && this.overlay.parentNode) {
-      this.overlay.parentNode.removeChild(this.overlay);
-    }
-    this.isOpen = false;
   }
 }
