@@ -10,10 +10,10 @@ import { ConfigHandler } from "./modules/ConfigHandler.js";
 
 const app = new Application();
 await app.init({
-  background: "#000000",
-  backgroundAlpha: 1,
-  resizeTo: window,
-  antialias: true,
+	background: "#000000",
+	backgroundAlpha: 1,
+	resizeTo: window,
+	antialias: true,
 });
 document.body.appendChild(app.canvas);
 export default app;
@@ -23,14 +23,15 @@ const inputElements = configHandler.inputElements;
 
 let galaxy;
 function generateGalaxy() {
-  // if the app already contains particles, we need to wipe them to generate new ones
-  if (app.stage.children.length > 0) app.stage.removeChildren();
-  galaxy = new Galaxy(inputElements);
-  galaxy.generateSpawners();
-  galaxy.generateUsers();
-  galaxy.generateEmptyUsers();
+	// if the app already contains particles, we need to wipe them to generate new ones
+	if (app.stage.children.length > 0) app.stage.removeChildren();
+	galaxy = new Galaxy(inputElements);
+	galaxy.generateSpawners();
+	galaxy.generateEmptyUserSpawners();
+	galaxy.generateUsers();
+	galaxy.generateEmptyUsers();
 
-  app.stage.addChild(galaxy);
+	app.stage.addChild(galaxy);
 }
 
 // generate the first galaxy before any inputs have changed
@@ -48,41 +49,42 @@ inputElements.userSpawnFunc.onchange = generateGalaxy;
 inputElements.particleAlpha.onchange = generateGalaxy;
 inputElements.emptyUserScale.onchange = generateGalaxy;
 inputElements.emptyUserQuantity.onchange = generateGalaxy;
+inputElements.emptyUserParticleColors.onchange = generateGalaxy;
 configHandler.setImportApplyFunction(generateGalaxy);
 window.addEventListener("resize", () => {
-  app.resize();
+	app.resize();
 });
 
 let t1 = 0;
 let t2 = 0;
 
 app.ticker.add(() => {
-  const centerX = app.screen.width / 2;
-  const centerY = app.screen.height / 2;
-  t1 += inputElements.spin1.get() || 0;
-  t2 += inputElements.spin2.get() || 0;
-  const phaseOffset1 = inputElements.phaseOffset1.get();
-  const phaseOffset2 = inputElements.phaseOffset2.get();
-  for (const user of galaxy.getChildren()) {
-    user.orbitAngle += user.orbitSpeed;
-    // notably, the original position of the user is not taken into account here
-    // the position of the user is used to calculate its orbitAngle, orbitSpeed, orbitRadius
-    // but it is then ignored for the actual positioning of the user inside this ticker.
-    user.x =
-      centerX +
-      Math[inputElements.xFunc.get()](
-        user.orbitAngle + user.orbitSpeed * phaseOffset1 + t1,
-      ) *
-        user.orbitRadius;
-    user.y =
-      centerY +
-      Math[inputElements.yFunc.get()](
-        user.orbitAngle + user.orbitSpeed * phaseOffset2 - t2,
-      ) *
-        user.orbitRadius;
+	const centerX = app.screen.width / 2;
+	const centerY = app.screen.height / 2;
+	t1 += inputElements.spin1.get() || 0;
+	t2 += inputElements.spin2.get() || 0;
+	const phaseOffset1 = inputElements.phaseOffset1.get();
+	const phaseOffset2 = inputElements.phaseOffset2.get();
+	for (const user of galaxy.getChildren()) {
+		user.orbitAngle += user.orbitSpeed;
+		// notably, the original position of the user is not taken into account here
+		// the position of the user is used to calculate its orbitAngle, orbitSpeed, orbitRadius
+		// but it is then ignored for the actual positioning of the user inside this ticker.
+		user.x =
+			centerX +
+			Math[inputElements.xFunc.get()](
+				user.orbitAngle + user.orbitSpeed * phaseOffset1 + t1,
+			) *
+				user.orbitRadius;
+		user.y =
+			centerY +
+			Math[inputElements.yFunc.get()](
+				user.orbitAngle + user.orbitSpeed * phaseOffset2 - t2,
+			) *
+				user.orbitRadius;
 
-    if (user.rotationSpeed) user.rotation += user.rotationSpeed;
-  }
+		if (user.rotationSpeed) user.rotation += user.rotationSpeed;
+	}
 });
 
 // galaxy.usersToTextures();
