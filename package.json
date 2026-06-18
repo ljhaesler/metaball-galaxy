@@ -11,6 +11,7 @@
     "build": "esbuild index.js --bundle --format=esm --minify --outfile=public/build.js"
   },
   "dependencies": {
+    "@ljhaesler/config-handler": "^1.1.1",
     "pixi.js": "^8.17.1"
   }
 }

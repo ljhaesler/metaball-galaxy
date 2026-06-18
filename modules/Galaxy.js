@@ -8,24 +8,22 @@ export class Galaxy extends Container {
 		super({ isRenderGroup: true });
 
 		console.log(inputElements);
-		this.density = inputElements.galaxyDensity.get();
-		this.containerSize = inputElements.containerSize.get();
-		this.rotationSpeed = inputElements.rotationSpeed.get();
-		this.emailQuantity = inputElements.emailQuantity.get();
-		this.userQuantity = inputElements.userQuantity.get();
-		this.centerBias = inputElements.centerBias.get();
-		this.particleSize = inputElements.particleSize.get();
-		this.userSpawnFunc = inputElements.userSpawnFunc.get();
-		this.particleAlpha = inputElements.particleAlpha.get();
-		this.emptyUserQuantity = inputElements.emptyUserQuantity.get();
-		this.emptyUserScale = inputElements.emptyUserScale.get();
+		this.density = inputElements.galaxyDensity;
+		this.containerSize = inputElements.containerSize;
+		this.rotationSpeed = inputElements.rotationSpeed;
+		this.emailQuantity = inputElements.emailQuantity;
+		this.userQuantity = inputElements.userQuantity;
+		this.centerBias = inputElements.centerBias;
+		this.particleSize = inputElements.particleSize;
+		this.userSpawnFunc = inputElements.userSpawnFunc;
+		this.particleAlpha = inputElements.particleAlpha;
+		this.emptyUserQuantity = inputElements.emptyUserQuantity;
+		this.emptyUserScale = inputElements.emptyUserScale;
 		this.particleColors = inputElements.particleColors
-			.get()
 			.split("/")
 			.map((el) => el.trim())
 			.map((el1) => el1.split(",").map((el2) => el2.trim()));
 		this.emptyUserParticleColors = inputElements.emptyUserParticleColors
-			.get()
 			.split("/")
 			.map((el) => el.trim())
 			.map((el1) => el1.split(",").map((el2) => el2.trim()));

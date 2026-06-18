@@ -6,7 +6,8 @@
 
 import { Application } from "pixi.js";
 import { Galaxy } from "./modules/Galaxy.js";
-import { ConfigHandler } from "./modules/ConfigHandler.js";
+import { ConfigHandler } from "@ljhaesler/config-handler";
+import schema from "./config.json" with { type: "json" };
 
 const app = new Application();
 await app.init({
@@ -18,14 +19,13 @@ await app.init({
 document.body.appendChild(app.canvas);
 export default app;
 
-const configHandler = new ConfigHandler();
-const inputElements = configHandler.inputElements;
+const configHandler = new ConfigHandler(schema);
 
 let galaxy;
 function generateGalaxy() {
 	// if the app already contains particles, we need to wipe them to generate new ones
 	if (app.stage.children.length > 0) app.stage.removeChildren();
-	galaxy = new Galaxy(inputElements);
+	galaxy = new Galaxy(configHandler.getValues());
 	galaxy.generateSpawners();
 	galaxy.generateEmptyUserSpawners();
 	galaxy.generateUsers();
@@ -37,19 +37,21 @@ function generateGalaxy() {
 // generate the first galaxy before any inputs have changed
 generateGalaxy();
 
-inputElements.galaxyDensity.onchange = generateGalaxy;
-inputElements.containerSize.onchange = generateGalaxy;
-inputElements.rotationSpeed.onchange = generateGalaxy;
-inputElements.emailQuantity.onchange = generateGalaxy;
-inputElements.userQuantity.onchange = generateGalaxy;
-inputElements.centerBias.onchange = generateGalaxy;
-inputElements.particleColors.onchange = generateGalaxy;
-inputElements.particleSize.onchange = generateGalaxy;
-inputElements.userSpawnFunc.onchange = generateGalaxy;
-inputElements.particleAlpha.onchange = generateGalaxy;
-inputElements.emptyUserScale.onchange = generateGalaxy;
-inputElements.emptyUserQuantity.onchange = generateGalaxy;
-inputElements.emptyUserParticleColors.onchange = generateGalaxy;
+configHandler.onChange(
+	generateGalaxy,
+	"galaxyDensity",
+	"containerSize",
+	"rotationSpeed",
+	"emailQuantity",
+	"userQuantity",
+	"centerBias",
+	"particleColors",
+	"particleAlpha",
+	"emptyUserScale",
+	"emptyUserQuantity",
+	"emptyUserParticleColors",
+);
+
 configHandler.setImportApplyFunction(generateGalaxy);
 window.addEventListener("resize", () => {
 	app.resize();
@@ -61,10 +63,10 @@ let t2 = 0;
 app.ticker.add(() => {
 	const centerX = app.screen.width / 2;
 	const centerY = app.screen.height / 2;
-	t1 += inputElements.spin1.get() || 0;
-	t2 += inputElements.spin2.get() || 0;
-	const phaseOffset1 = inputElements.phaseOffset1.get();
-	const phaseOffset2 = inputElements.phaseOffset2.get();
+	t1 += configHandler.getValue("spin1") || 0;
+	t2 += configHandler.getValue("spin2") || 0;
+	const phaseOffset1 = configHandler.getValue("phaseOffset1");
+	const phaseOffset2 = configHandler.getValue("phaseOffset2");
 	for (const user of galaxy.getChildren()) {
 		user.orbitAngle += user.orbitSpeed;
 		// notably, the original position of the user is not taken into account here
@@ -72,13 +74,13 @@ app.ticker.add(() => {
 		// but it is then ignored for the actual positioning of the user inside this ticker.
 		user.x =
 			centerX +
-			Math[inputElements.xFunc.get()](
+			Math[configHandler.getValue("xFunc")](
 				user.orbitAngle + user.orbitSpeed * phaseOffset1 + t1,
 			) *
 				user.orbitRadius;
 		user.y =
 			centerY +
-			Math[inputElements.yFunc.get()](
+			Math[configHandler.getValue("yFunc")](
 				user.orbitAngle + user.orbitSpeed * phaseOffset2 - t2,
 			) *
 				user.orbitRadius;
