@@ -7,14 +7,6 @@
 		"selectValues": [],
 		"description": "Règle la densité de la galaxie, entre 0 et infini. Une valeur plus proche de 0 créera une galaxie plus serée."
 	},
-	"containerSize": {
-		"inputLabel": "Taille Système Utilisateur",
-		"inputType": "text",
-		"dataType": "int",
-		"defaultValue": "32",
-		"selectValues": [],
-		"description": "Règle la taille en pixels du système utilisateur. Cela veut dire que les emails d'un utilisateur seront espacées dans un carré de X pixels par X pixels."
-	},
 	"centerBias": {
 		"inputLabel": "Coefficient de Densité des Emails",
 		"inputType": "text",
@@ -23,15 +15,6 @@
 		"selectValues": [],
 		"description": "Règle la probabilité qu'un email apparaîtera plus au centre d'un système utilisateur. Un plus grand nombre augmentera les chances que les emails se retrouvent au centre d'un système. Si ce nombre est trop haut les emails s'empileront."
 	},
-	"rotationSpeed": {
-		"inputLabel": "Vitesse de Rotation Maximale du Système Utilisateur",
-		"inputType": "text",
-		"dataType": "float",
-		"defaultValue": "0.02",
-		"selectValues": [],
-		"description": "Règle la vitesse maximale de rotation des systèmes utilisateurs. Ces vitesses sont gérés aléatoirement, mais une vitesse maximale doit être donnée."
-	},
-
 	"emailQuantity": {
 		"inputLabel": "Quantité d'Emails",
 		"inputType": "text",
@@ -85,17 +68,17 @@
 		"inputLabel": "Couleurs des Particules",
 		"inputType": "text",
 		"dataType": "string",
-		"defaultValue": "#ff00ff, #00ffff / #fff000, #000fff/#ff0000,#00ff00/#00ff00,#0000ff",
+		"defaultValue": "ff00ff88, 00ffff66 / fff00088, 000fff33/ff0000aa,00ff0077/00ff0066,0000ff66",
 		"selectValues": [],
 		"description": "Définit les palettes de couleurs utilisées pour les particules. Chaque sous-tableau représente une palette de couleurs."
 	},
-	"particleAlpha": {
-		"inputLabel": "Alpha/Opacité des Particules",
+	"particleAssociations": {
+		"inputLabel": "Associations des couleurs",
 		"inputType": "text",
-		"dataType": "float",
-		"defaultValue": "0.8",
+		"dataType": "string",
+		"defaultValue": "haine, tristesse, jalousie, peur",
 		"selectValues": [],
-		"description": "Définit la transparence des particules."
+		"description": "Définit l'association pour chaque sous-tableau de couleurs"
 	},
 	"particleSize": {
 		"inputLabel": "Taille des Emails",
@@ -104,35 +87,6 @@
 		"defaultValue": "1",
 		"selectValues": [],
 		"description": "Détermine le rayon ou la taille visuelle des emails individuelles."
-	},
-	"userSpawnFunc": {
-		"inputLabel": "Fonction de Spawn Utilisateur",
-		"inputType": "select",
-		"dataType": "string",
-		"defaultValue": "_getRectSpawnPoint",
-		"selectValues": [
-			"_getRectSpawnPoint",
-			"_getLineSpawnPoint",
-			"_getThinRectSpawnPoint",
-			"_getTriangleSpawnPoint"
-		],
-		"description": "Sélectionne l'algorithme utilisé pour déterminer la position de naissance des systèmes utilisateurs."
-	},
-	"xFunc": {
-		"inputLabel": "Fonction X",
-		"inputType": "select",
-		"dataType": "string",
-		"defaultValue": "cos",
-		"selectValues": ["sin", "cos", "tan"],
-		"description": "Définit la fonction mathématique appliquée à l'axe X pour le mouvement de la galaxie."
-	},
-	"yFunc": {
-		"inputLabel": "Fonction Y",
-		"inputType": "select",
-		"dataType": "string",
-		"defaultValue": "tan",
-		"selectValues": ["sin", "cos", "tan"],
-		"description": "Définit la fonction mathématique appliquée à l'axe Y pour le mouvement de la galaxie."
 	},
 	"emptyUserQuantity": {
 		"inputLabel": "Quantité Utilisateurs Vide",
@@ -146,7 +100,7 @@
 		"inputLabel": "Taille des Utilisateurs Vide",
 		"inputType": "text",
 		"dataType": "float",
-		"defaultValue": "0.25",
+		"defaultValue": "1",
 		"selectValues": [],
 		"description": "Définit la taille des utilisateurs vide."
 	},
@@ -154,8 +108,8 @@
 		"inputLabel": "Couleurs des Particules pour Utilisateurs Vide",
 		"inputType": "text",
 		"dataType": "string",
-		"defaultValue": "#ff00ff, #00ffff / #fff000, #000fff/#ff0000,#00ff00/#00ff00,#0000ff",
+		"defaultValue": "eeaaffee",
 		"selectValues": [],
-		"description": "Définit les palettes de couleurs utilisées pour les particules des utilisateurs vides. Chaque sous-tableau représente une palette de couleurs."
+		"description": "Définit les palettes de couleurs utilisées pour les particules des utilisateurs vides. Laisser vide pour utiliser les couleurs des utilisateurs."
 	}
 }

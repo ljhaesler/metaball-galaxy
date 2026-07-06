@@ -1,94 +1,97 @@
-// I need as many ParticleSpawners are there are colour sets
-// these ParticleSpawners are used to populate UserEmailSystems with particles
-// and the Galaxy itself is populated with UserEmailSystems
-// GalaxyDensity should be defined on the Galaxy itself
-// but the UserEmailSystems need the GalaxyDensity
-
-import { Application } from "pixi.js";
-import { Galaxy } from "./modules/Galaxy.js";
 import { ConfigHandler } from "@ljhaesler/config-handler";
+import { Galaxy, ColorHandler } from "@ljhaesler/galaxy";
 import schema from "./config.json" with { type: "json" };
 
-const app = new Application();
-await app.init({
-	background: "#000000",
-	backgroundAlpha: 1,
-	resizeTo: window,
-	antialias: true,
-});
-document.body.appendChild(app.canvas);
-export default app;
-
 const configHandler = new ConfigHandler(schema);
+const colorHandler = new ColorHandler();
 
-let galaxy;
-function generateGalaxy() {
-	// if the app already contains particles, we need to wipe them to generate new ones
-	if (app.stage.children.length > 0) app.stage.removeChildren();
-	galaxy = new Galaxy(configHandler.getValues());
-	galaxy.generateSpawners();
-	galaxy.generateEmptyUserSpawners();
-	galaxy.generateUsers();
-	galaxy.generateEmptyUsers();
+const galaxy = new Galaxy(colorHandler);
+await galaxy.quickInit();
 
-	app.stage.addChild(galaxy);
+function updateGalaxy() {
+	updateColorHandler();
+	generateUsers();
 }
 
-// generate the first galaxy before any inputs have changed
-generateGalaxy();
+function updateColorHandler() {
+	const { particleAssociations, particleColors } = configHandler.getValues();
+
+	colorHandler.setAssociations(particleAssociations);
+	colorHandler.setColors(particleColors);
+}
+
+function generateUsers() {
+	galaxy.destroyUsers();
+
+	const {
+		galaxyDensity,
+		centerBias,
+		emailQuantity,
+		userQuantity,
+		particleSize,
+		emptyUserQuantity,
+		emptyUserScale,
+		emptyUserParticleColors,
+	} = configHandler.getValues();
+
+	galaxy.density = galaxyDensity;
+
+	let emptyUserColorHandler;
+	if (emptyUserParticleColors.length > 0) {
+		emptyUserColorHandler = new ColorHandler();
+		emptyUserColorHandler.setAssociations("empty");
+
+		// split here for legacy ConfigHandler .json file imports.
+		emptyUserColorHandler.setColors(emptyUserParticleColors.split("/")[0]);
+	}
+
+	galaxy.addEmptyUsers({
+		particleSize: emptyUserScale,
+		particleQuantity: emptyUserQuantity,
+		colorHandler: emptyUserColorHandler,
+	});
+
+	for (let i = 0; i < userQuantity; i++) {
+		galaxy.addUser({
+			association:
+				colorHandler.associations[
+					Math.floor(Math.random() * colorHandler.associations.length)
+				],
+			particleSize,
+			particleQuantity: emailQuantity,
+			centerBias,
+		});
+	}
+}
 
 configHandler.onChange(
-	generateGalaxy,
-	"galaxyDensity",
-	"containerSize",
-	"rotationSpeed",
+	updateGalaxy,
+	"particleColors",
+	"centerBias",
 	"emailQuantity",
 	"userQuantity",
-	"centerBias",
-	"particleColors",
-	"particleAlpha",
-	"emptyUserScale",
+	"particleSize",
+	"particleAssociations",
+	"galaxyDensity",
 	"emptyUserQuantity",
+	"emptyUserScale",
 	"emptyUserParticleColors",
 );
+configHandler.setImportApplyFunction(updateGalaxy);
 
-configHandler.setImportApplyFunction(generateGalaxy);
-window.addEventListener("resize", () => {
-	app.resize();
-});
+updateGalaxy();
 
 let t1 = 0;
 let t2 = 0;
 
-app.ticker.add(() => {
-	const centerX = app.screen.width / 2;
-	const centerY = app.screen.height / 2;
-	t1 += configHandler.getValue("spin1") || 0;
-	t2 += configHandler.getValue("spin2") || 0;
+galaxy.ticker.add(() => {
+	const spin1 = configHandler.getValue("spin1");
+	const spin2 = configHandler.getValue("spin2");
 	const phaseOffset1 = configHandler.getValue("phaseOffset1");
 	const phaseOffset2 = configHandler.getValue("phaseOffset2");
-	for (const user of galaxy.getChildren()) {
-		user.orbitAngle += user.orbitSpeed;
-		// notably, the original position of the user is not taken into account here
-		// the position of the user is used to calculate its orbitAngle, orbitSpeed, orbitRadius
-		// but it is then ignored for the actual positioning of the user inside this ticker.
-		user.x =
-			centerX +
-			Math[configHandler.getValue("xFunc")](
-				user.orbitAngle + user.orbitSpeed * phaseOffset1 + t1,
-			) *
-				user.orbitRadius;
-		user.y =
-			centerY +
-			Math[configHandler.getValue("yFunc")](
-				user.orbitAngle + user.orbitSpeed * phaseOffset2 - t2,
-			) *
-				user.orbitRadius;
 
-		if (user.rotationSpeed) user.rotation += user.rotationSpeed;
-	}
+	t1 += spin1;
+	t2 += spin2;
+
+	galaxy.tick(t1, t2, phaseOffset1, phaseOffset2);
 });
-
-// galaxy.usersToTextures();
-// it seems like any attempt to remove the particles themselves will just delete the generated texture altogether
-// I think I'd have to draw Graphics objects for each user, generate textures/sprites with those...

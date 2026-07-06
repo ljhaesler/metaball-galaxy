@@ -1,17 +1,18 @@
 {
-  "name": "metaball-galaxy",
-  "version": "1.0.0",
-  "description": "",
-  "license": "ISC",
-  "author": "",
-  "type": "module",
-  "main": "index.js",
-  "scripts": {
-    "serve": "esbuild index.js --bundle --outfile=public/build.js --format=esm --watch --serve --servedir=public",
-    "build": "esbuild index.js --bundle --format=esm --minify --outfile=public/build.js"
-  },
-  "dependencies": {
-    "@ljhaesler/config-handler": "^1.1.1",
-    "pixi.js": "^8.17.1"
-  }
+	"name": "metaball-galaxy",
+	"version": "1.0.0",
+	"description": "",
+	"license": "ISC",
+	"author": "",
+	"type": "module",
+	"main": "index.js",
+	"scripts": {
+		"serve": "esbuild index.js --bundle --outfile=public/build.js --format=esm --watch --serve --servedir=public",
+		"build": "esbuild index.js --bundle --format=esm --minify --outfile=public/build.js"
+	},
+	"dependencies": {
+		"@ljhaesler/config-handler": "latest",
+		"@ljhaesler/galaxy": "^2.4.10",
+		"pixi.js": "^8.17.1"
+	}
 }
