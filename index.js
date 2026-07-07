@@ -14,9 +14,21 @@ function updateGalaxy() {
 }
 
 function updateColorHandler() {
-	const { particleAssociations, particleColors } = configHandler.getValues();
+	let { particleAssociations, particleColors } = configHandler.getValues();
 
 	colorHandler.setAssociations(particleAssociations);
+	colorHandler.setColors(particleColors);
+
+	if (colorHandler._colors.length < colorHandler._associations.length) {
+		for (
+			let i = 0;
+			i < colorHandler._associations.length - colorHandler._colors.length;
+			i++
+		) {
+			particleColors += "/ffffff88";
+		}
+	}
+
 	colorHandler.setColors(particleColors);
 }
 

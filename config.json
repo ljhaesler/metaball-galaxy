@@ -76,7 +76,7 @@
 		"inputLabel": "Associations des couleurs",
 		"inputType": "text",
 		"dataType": "string",
-		"defaultValue": "haine, tristesse, jalousie, peur",
+		"defaultValue": "peur, culpabilité, honte, humiliation, colère, déception, agacement, lassitude",
 		"selectValues": [],
 		"description": "Définit l'association pour chaque sous-tableau de couleurs"
 	},
